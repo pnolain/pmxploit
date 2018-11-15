@@ -1,0 +1,51 @@
+template:
+  params:
+    bootswatch: lumen
+  assets: pkgdown
+  default_assets: true
+
+authors:
+  Patrick Nolain:
+    href: mailto:patrick.nolain@sanofi.com
+
+navbar:
+  title: "PMxploit"
+
+reference:
+  - title: "Loading runs"
+    contents:
+      - load_nm_run
+  - title: "NONMEM run object"
+    desc: "S3 methods for NONMEM run object"
+    contents:
+      - filter.nonmem_run
+      - group_by.nonmem_run
+      - ungroup.nonmem_run
+      - slice.nonmem_run
+      - print.nonmem_run
+  - title: "Plot functions"
+    contents:
+      - starts_with("plot_")
+  - title: "Summary functions"
+    contents:
+      - starts_with("summarize_")
+  - title: "Run comparison"
+    contents:
+      - compare_runs
+  - title: "Outliers detection"
+    contents:
+      - detect_outliers
+  - title: "Parsing functions"
+    contents:
+      - starts_with("parse_")
+  - title: "Quality criteria computation"
+    contents:
+      - quality_criteria
+  - title: "Miscellaneous"
+    contents:
+      - EXAMPLERUN
+      - recode_categorical_covariates
+      - rename_compartments
+      - rename_covariates
+      - switch_covariates_type
+      - theme_pmx

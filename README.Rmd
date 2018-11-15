@@ -1,0 +1,30 @@
+---
+output:
+  github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE, message=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+
+library(tidyverse)
+library(pmxploit)
+theme_set(theme_pmx())
+```
+
+# PMxploit
+
+<img id="logo" src="pmxploit.svg" alt="pmxploit" />
+
+The goal of PMXploit is to facilitate NONMEM post-processing analysis. It provides helper functions for visualizing and summarizing population analyses results, detecting outliers, computing numerical quality criteria and comparing multiple run results.
+
+It is compatible with run executed with NONMEM 7.2 and higher.
+
+## Requirements
+
+To take full advantage of `pmxploit` capacities, users should mind applying some "conventions" in writing NONMEM control stream files (see [article](articles/nonmem_requirements.html)).

@@ -1,0 +1,106 @@
+---
+title: "NONMEM control stream writing requirements"
+author: "Patrick Nolain"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Control stream requirements}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+`pmxploit` parses the text inside control streams to extract informations of the NONMEM job related to the model, the estimation steps or the output tables.
+
+To be able to take the most benefit from `pmxploit` parsing capacity, one should be careful about how to write NONMEM control streams. 
+
+The following coding conventions should be respected for an optimal use of `pmxploit`.
+
+# `$PROBLEM` record
+
+Only one $PROBLEM record is accepted per run.
+
+# `$INPUT` record
+
+* Items specified in $INPUT must correspond to a column of the dataset
+* Subject identifier column must be `ID`
+* Columns aliases are supported (e.g. `DV=CONC`)
+* Columns dropping is supported (e.g. `IDEN=DROP`)
+
+# `$DATA` record
+
+* The dataset must be located in the same directory as the control stream file
+* Filtering dataset using NONMEM `IGNORE` option is not recommanded (although it may be supported, `pmxploit` import of such cases must be carefully verified)
+
+# `$MODEL` record
+
+It is advised to declare each compartment on a separate line:
+
+```
+$MODEL
+NCOMP=4
+COMP=(Depot)
+COMP=(Central)
+COMP=(Peripheral)
+COMP=(Out)
+```
+
+# `$ABBR` record
+
+Parsing of this record only support the `REPLACE` option for `ETA` parameters when declared like:
+
+```
+$ABBR REPLACE ETA(OCC_CL)=ETA(3,4,5)
+```
+
+and then used like:
+
+```
+$PK
+TVCL=THETA(2)
+ETCL=ETA(2)
+ETOCC1=ETA(3)
+ETOCC2=ETA(4)
+ETOCC3=ETA(5)
+
+MU_2=THETA(2)
+CL=DEXP(MU_2+ETACL)*EXP(ETA(OCC_CL))
+```
+
+# `$PK`, `$PRED` and `$ERROR` records
+
+* Typical parameters must be explicitely declared in the form `XXX = THETA(n)` where `XXX` is the parameter name and `n` is its index in the fixed effects vector
+* Random effects parameters must be explicitely declared in the form `XXX = ETA(n)` where `XXX` is the parameter name and `n` is its index in the random effects matrix diagonal
+
+Hence, here is an adequate declaration of parameters:
+
+```
+; THETAs
+TVCL = THETA(1)
+ALLOCL = THETA(2)
+
+; ETAs
+ETACL = ETA(1)
+
+; Individual parameter
+CL = TVCL * (WT/65)**ALLOCL * EXP(ETACL)
+```
+
+Whereas the following is not advised:
+
+```
+CL = THETA(1) * (WT/65)**THETA(2) * EXP(ETA(1))
+```
+
+# `$TABLE` record(s)
+
+* `xpose4` conventions regarding tables output should be used (see: http://xpose.sourceforge.net/docs_faq.php)
+  * `catab`, `cotab` and `patab` definitions are used to guess the role of each column (respectively categorical covariates, continuous covariates and parameters)
+  * The other tables are optional
+  * Internally, `pmxploit` merges the dataset and the output tables into one entity called `pmxploitab` (a `tibble`)
+* The number of rows of the output tables should match the number of rows of the dataset
+  * `FIRSTONLY` option should not be used
+
+# Miscellaneous
+
+* `$SIMULATION` is not supported
+* Support for mixture models (`$MIX` record) has not been fully tested yet

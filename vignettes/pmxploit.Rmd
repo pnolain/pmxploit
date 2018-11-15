@@ -1,0 +1,254 @@
+---
+title: "Introduction to PMXploit"
+author: "Patrick Nolain"
+date: "`r Sys.Date()`"
+output:
+  html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to pmxploit}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r, echo=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 4.5
+)
+```
+
+The present article describes briefly how to use `pmxploit` from `R`.
+
+```{r, message=FALSE}
+library(pmxploit)
+library(knitr)
+library(tidyverse)
+
+theme_set(theme_pmx())
+```
+
+
+# Load a NONMEM run archive
+
+```{r, eval=FALSE}
+run <- load_nm_run(path = "path/to/my_run_archive.tar.gz")
+```
+
+```{r, echo=FALSE}
+run <- pmxploit:::EXAMPLERUN
+```
+
+# Job details
+
+## Run information
+
+### Model/Data/Files
+
+```{r, warning=FALSE}
+run$info %>% 
+  bind_cols() %>% 
+  select(run_name, dataset_file, control_stream_file, nodes, nm_version, number_of_subjects, number_of_observations, duration) %>% 
+  mutate(duration = as.character(lubridate::as.period(duration))) %>% 
+  gather(property, value) %>% 
+  kable()
+```
+
+### Estimation
+
+```{r}
+# Estimation steps summary
+run$estimations %>%
+  map(~ .[c("title", "final_ofv", "minimization", "duration")]) %>% 
+  bind_rows(.id= "n_estimation") %>% 
+  kable()
+```
+
+## Model information
+
+### Compartments
+
+```{r}
+kable(run$model$compartments)
+```
+
+### Parameters
+
+```{r}
+run$model$parameters %>% 
+  filter(type %in% c("theta", "eta")) %>% 
+  select(id, type, name) %>% 
+  kable()
+```
+
+### Covariates
+
+```{r}
+kable(run$model$covariates)
+```
+
+# Diagnostic plots
+
+## Spaghetti plot
+
+```{r, fig.height=5}
+run %>% 
+  group_by(SEX) %>% 
+  plot_observed_profiles(compartment = 2, y_scale = "log", facetted = FALSE)
+```
+
+## Dependent variable observations vs predictions
+
+```{r}
+plot_dv_vs_predictions(run, compartment = 2, predictions = c("PRED", "IPRED"))
+plot_dv_vs_predictions(run, compartment = 2, predictions = c("PRED", "IPRED"), x_scale = "log", y_scale = "log")
+```
+
+## Residuals
+
+```{r}
+plot_residuals(run, compartment = 2, residuals = "CWRES", regressor = c("PRED", "TIME"), reference_value = 2)
+
+plot_residuals(run, compartment = 2, residuals = c("CWRES"), type = "histogram")
+```
+
+## Individual predictions profiles
+
+```{r}
+plot_individual_profiles(run, compartment = 2, ids = 1:4, predictions = c("PRED", "IPRED"), y_scale = "log")
+```
+
+# Population parameters
+
+## THETA
+
+```{r}
+last_estimation <- last(run$estimations)
+
+last_estimation$thetas %>% 
+  mutate(rse = scales::percent(rse)) %>% 
+  kable()
+```
+
+### Convergence
+
+```{r}
+plot_convergence(run, parameters = "theta")
+```
+
+## OMEGA
+
+```{r}
+# OMEGA matrix
+kable(last_estimation$omega_matrix)
+
+# OMEGA matrix as a table, with RSE% and IC 95%
+last_estimation$omega %>% 
+  mutate(rse = scales::percent(rse)) %>% 
+  kable()
+```
+
+## Shrinkage
+
+```{r}1
+last_estimation$shrinkage %>% 
+  mutate(shrinkage = scales::percent(shrinkage)) %>% 
+  kable()
+```
+
+# Individuals
+
+## Parameters
+
+### Distributions
+
+```{r}
+summarize_parameters_distributions(run)
+
+plot_parameters_distributions(run, parameters = "eta")
+
+run %>% 
+  group_by(STUD) %>%
+  plot_parameters_distributions(parameters = c("CL", "V1"), type = "boxplot")
+```
+
+### Correlations
+
+```{r}
+summarize_parameters_correlations(run, parameters = "individual")
+
+plot_parameters_correlations(run, parameters = "eta", type = "heatmap")
+```
+
+## Continuous covariates
+
+### Distributions
+
+```{r}
+summarize_continuous_covariates(run)
+
+plot_continuous_covariates_distributions(run)
+run %>% 
+  group_by(STUD) %>%
+  plot_continuous_covariates_distributions(type = "boxplot")
+```
+
+### Correlations
+
+```{r}
+summarize_covariates_correlations(run)
+
+plot_covariates_correlations(run, type = "heatmap")
+
+run %>% 
+  group_by(STUD) %>%
+  plot_covariates_correlations(type = "scatterplot")
+```
+
+## Parameters vs covariates
+
+```{r, message=FALSE, warning=FALSE}
+plot_parameters_vs_continuous_covariates(run)
+
+plot_parameters_vs_categorical_covariates(run, parameters = c("CL", "V1"))
+```
+
+# Quality criteria
+
+```{r}
+# Overall QC
+qc <- quality_criteria(run, predictions = "PRED")
+
+# QC by study
+qc_stud <- run %>% 
+  group_by(STUD) %>%
+  quality_criteria(predictions = "PRED")
+
+kable(qc$standard)
+
+qc_stud %>% 
+  select(Study, standard) %>% 
+  unnest() %>% 
+  kable()
+
+# Bias
+qc_stud %>% 
+  select(Study, bias) %>% 
+  unnest() %>% 
+  mutate(relative_value = scales::percent(relative_value)) %>% 
+  rename(`Mean Prediction Error (%)` = relative_value) %>% 
+  kable()
+
+# Precision
+qc_stud %>% 
+  select(Study, precision) %>% 
+  unnest() %>% 
+  mutate(relative_value = scales::percent(relative_value)) %>% 
+  rename(`Root Mean Square Error (%)` = relative_value) %>% 
+  kable()
+```
+
+

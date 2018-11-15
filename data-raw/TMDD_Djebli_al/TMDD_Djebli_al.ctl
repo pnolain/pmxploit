@@ -1,0 +1,160 @@
+$PROB  TMDD Qss model for alirocumab
+; Reference:
+; Djebli N, Martinez JM, Lohan L, Khier S, Brunet A, Hurbin F, et al.
+; Target-mediated drug disposition population pharmacokinetics model of alirocumab in
+; healthy volunteers and patients: pooled analysis of randomized phase I/II/III studies.
+; Clin Pharmacokinet. 2017
+
+$INPUT ID TIME TAD AMT RATE DV MDV EVID CMT ISC DISST AGE SEX WT BMI CLCR GFR BSLDLC FIBR EZE STATIN TBSPCSK FBSPCSK ARM ABDO THIGH STUD
+
+$DATA dataset.csv IGNORE=@
+
+$SUBROUTINE ADVAN13 TOL=5 
+
+$MODEL NCOMP=4
+       COMP=(DEPOT)
+       COMP=(SARTOT) 
+       COMP=(TPCSK9)
+       COMP=(PERIPH)
+
+$PK
+
+   TVCL = THETA(1)            
+   TKON = THETA(2)            
+   TKIN = THETA(3)
+   TKDE = THETA(4)
+   TVQ  = THETA(5)
+   TVV1 = THETA(6)      
+   TVV2 = THETA(7)
+   TVKA = THETA(8)
+   TVF  = THETA(9)
+   TVEP = THETA(10)      
+   TVEA = THETA(11)     
+   TVLAG = THETA(12)
+   COV1   = THETA(13)
+
+
+  ETCL   = ETA(1)
+  EKON   = ETA(2)
+  EKIN   = ETA(3)
+  EKDE   = ETA(4)
+  ETQ    = ETA(5)
+  ETV1   = ETA(6)
+  ETV2   = ETA(7)
+  ETKA   = ETA(8)
+  ETF    = ETA(9)
+
+
+
+    CL   = TVCL * EXP(ETCL)
+    KON  = TKON * EXP(EKON)
+    KINT = TKIN * EXP(EKIN)
+    KDEG = TKDE * EXP(EKDE)
+    Q    = TVQ  * EXP(ETQ)
+
+
+
+COV1V1 = TVV1 * COV1 ** DISST
+
+    V1 = COV1V1 * EXP(ETV1)
+
+    V2   = TVV2 * EXP(ETV2)
+    KA   = TVKA * EXP(ETKA)
+   ALAG1 = TVLAG
+
+IF (ISC .EQ.0) THEN
+
+ F1=1
+ELSE
+PHI = LOG(TVF/(1-TVF))
+ F1 = EXP(PHI+ETF)/(1+EXP(PHI+ETF)) 
+ENDIF
+
+  KEL = CL / V1
+  KPT = Q / V1
+  KTP = Q / V2
+
+KSS = 0.58 + KINT/KON
+
+SARBASE = 0           
+KSYN = TBSPCSK * KDEG 
+
+A_0(2) = SARBASE
+A_0(3) = TBSPCSK * V1
+ 
+S2=V1
+S3=V1
+
+
+
+$DES
+C2=A(2)/V1
+C3=A(3)/V1
+C4=A(4)/V2
+DADT(1)= -KA * A(1) * ISC * F1
+
+K1 = C2 - C3 - KSS
+SARF = 0.5*(K1+ SQRT(K1*K1 + 4*KSS*C2))
+
+DADT(2)= KA*A(1)*ISC*F1-(KEL+KPT)*SARF*V1-KINT*A(3)*SARF/(KSS+SARF)+KTP*C4*V2
+
+DADT(3)= KSYN  * V1 - KDEG * A(3)- (KINT - KDEG) * SARF * A(3)/(KSS + SARF)
+
+DADT(4)= KPT* SARF * V1 - KTP * A(4)
+
+;A(1) = DOSE
+;SARF = [SAR_LIBRE]                     
+;A(2) = [SARtot]*V1
+;A(3) = [PCSK9tot]*V1
+;A(4) = [L tissulaire]*V2
+
+; PCSK9SAR = TPCSK9 * SARF/(KSS + SARF) => surprediction possible du complexe au
+;tps initial !!!
+
+$ERROR 
+
+IPRED=F
+SAV=0
+IF (IPRED.EQ.0) SAV=0.00001
+W=F
+IRES=DV-IPRED
+IWRES=IRES/(W+SAV)
+
+Y=F+SQRT(TVEA*TVEA + TVEP*TVEP*F*F)*EPS(1)
+
+$THETA ( 0.0 0.20 1000000.0 ) ; TVCL
+$THETA ( 559 559 559 ) ; TKON
+$THETA ( 0.0 0.25 1000000.0 ) ; TKIN
+$THETA ( 0.0 2.00 1000000.0 ) ; TKDE
+$THETA ( 0.0 1.00 1000000.0 ) ; TVQ
+$THETA ( 2.0 4.00 1000000.0 ) ; TVV1 SART
+$THETA (   2.612   2.612       2.612 ) ; TVV2
+$THETA ( 0.0 0.50 1000000.0 ) ; TVKA
+$THETA (   0.550   0.750       1.000 ) ; TVF
+$THETA ( 0.0 0.30 1000000.0 ) ; TVEP
+$THETA ( 0.0 0.05 1000000.0 ) ; TVEA
+$THETA ( 0.0 0.05  100) ; LAG
+$THETA 1 ; COV1 
+
+
+$OMEGA 0.5    
+$OMEGA 0 FIX    
+$OMEGA 0.5    
+$OMEGA 0.5
+$OMEGA 0.5  
+$OMEGA 0.5 
+$OMEGA 0 FIX
+$OMEGA 0.5    
+$OMEGA 0.5    
+
+$SIGMA  1 FIX  
+
+ 
+$ESTIMATION METHOD=1 INTERACTION PRINT=1 MAXEVAL=9999 NOABORT POSTHOC
+
+$COVARIANCE PRINT=E MATRIX=S
+
+$TAB ID TIME DV IPRED PRED CMT IRES CWRES IWRES NOHEADER NOPRINT NOAPPEND FORMAT=,1PE11.4 FILE=sdtab
+$TAB ID TIME CL KON KSS KINT KDEG Q V1 V2 KA ALAG1 F1 ETAS(1:LAST) NOHEADER NOPRINT NOAPPEND FORMAT=,1PE11.4 FILE=patab
+$TAB ID TIME AGE WT BMI CLCR GFR BSLDLC TBSPCSK FBSPCSK NOHEADER NOPRINT NOAPPEND FORMAT=,1PE11.4 FILE=cotab
+$TAB ID TIME ISC DISST SEX FIBR EZE STATIN ARM ABDO THIGH STUD NOHEADER NOPRINT NOAPPEND FORMAT=,1PE11.4 FILE=catab
