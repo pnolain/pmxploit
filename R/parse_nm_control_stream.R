@@ -1071,7 +1071,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     covariance = covariance,
     simulations = sim_matches,
     tables = tab_matches,
-    extra_files = unique(c(include_files, msfi_file))
+    extra_files = unique(c(include_files, sub_extra_files, msfi_file))
   )
 
 
