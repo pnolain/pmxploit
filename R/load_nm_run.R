@@ -1085,7 +1085,7 @@ load_nm_run_directory <-
         "ADVAN1" = 1,
         "ADVAN10" = 1,
         "ADVAN2" = 2,
-        "ADVAN3" = 2,
+        "ADVAN3" = 1,
         "ADVAN4" = 2,
         "ADVAN11" = 1,
         "ADVAN12" = 2,
