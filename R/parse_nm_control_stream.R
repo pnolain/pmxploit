@@ -229,8 +229,8 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
         )
       ) %>%
       # mutate(column = ifelse(dropped, ifelse(left == "DROP", right, left), dropped)) %>%
-      select(-left, -right) %>%
-      filter(nchar(column) > 0)
+      select(-left, -right) #%>%
+      # filter(nchar(column) > 0)
   }
 
   # $DATA----
