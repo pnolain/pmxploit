@@ -34,7 +34,7 @@ Suggests:
     testthat,
     knitr,
     spelling
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 Language: en-US
 Encoding: UTF-8

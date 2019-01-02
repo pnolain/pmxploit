@@ -145,6 +145,9 @@ quality_criteria <- function(run,
       if (log_data) {
         observations <- exp(observations)
         pred <- exp(pred)
+
+        if(any(is.infinite(c(observations, pred))))
+          stop(simpleError("Infinite values after exponential transformation."))
       }
 
       if (is.null(pred)) {
@@ -169,7 +172,7 @@ quality_criteria <- function(run,
       )
 
       #   # ME = Maximal Error
-      #   max_e <- pred_err %>% abs %>% max
+      #   max_e <- psred_err %>% abs %>% max
       #
       #   # AFE = Average Fold Error
       #   # AAFE = Absolute Average Fold Error
@@ -236,10 +239,6 @@ quality_criteria <- function(run,
         ci_up = sqrt(t_test_square$conf.high),
         relative_value = value / obs_mean
       )
-
-      mse <- pred_err_mean^2 + mean((pred_err-pred_err_mean)^2)
-
-      sqrt(mse)
 
       tibble(
         n_observations = nrow(sub_df),
