@@ -236,7 +236,6 @@ quality_criteria <- function(run,
         ci_up = sqrt(t_test_square$conf.high),
         relative_value = value / obs_mean
       )
-      browser()
 
       mse <- pred_err_mean^2 + mean((pred_err-pred_err_mean)^2)
 
