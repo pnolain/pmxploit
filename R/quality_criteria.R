@@ -17,14 +17,18 @@
 #' @details For quality criteria computations, residuals are computed based on
 #'   the formula:
 #'
-#'   \eqn{res = obs - pred} \itemize{ \item Standard QC \itemize{ \item Maximal
-#'   Error: \preformatted{me <- max(abs(res))} \item Average Fold Error:
-#'   \preformatted{fe <- ifelse(pred > obs, pred / obs, obs / pred)
-#'    afe <- mean(abs(log10(10^(fe[is.finite(fe)]))))} For
-#'   reference, see \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2691473/} }
+#'   \eqn{pred_err_i = pred_i - obs_i} \itemize{ \item Standard QC \itemize{ \item Maximal
+#'   Error:
+#'   \deqn{ME=max(|obs-pred|)}
+#'   \item Average Fold Error (and Absolute Average Fold Error):
+#'
+#'   \deqn{AFE=10^(mean(abs(log10(pred/obs))))}
+#'   \deqn{AAFE=10^(mean(log10(pred/obs)))}
+#'   For reference, see \url{https://www.ncbi.nlm.nih.gov/pubmed/26696327} and
+#'   \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2691473/} }
 #'   \item Bias: Mean Prediction Error (MPE) \itemize{ \item Absolute:
-#'   \code{mean(res)} \item Confidence interval for a given \code{alpha} \item
-#'   Relative: \code{mean(res)/mean(obs)} } \item Precision: Root Mean Square
+#'   \code{mean(pred_err)} \item Confidence interval for a given \code{alpha} \item
+#'   Relative: \code{mean(pred_err/obs)} } \item Precision: Root Mean Square
 #'   Error (RMSE) \itemize{ \item Absolute: Student's t-Test estimate of
 #'   \code{t.test((obs - pred)^2)} \item Confidence interval for a given
 #'   \code{alpha} \item Relative: \code{rmse/mean(obs)} } \item Student's
@@ -147,36 +151,32 @@ quality_criteria <- function(run,
         stop(simpleError("No predictions found in output tables."))
       }
 
-      res <- observations - pred
+      #res <- observations - pred
+      pred_err <- pred - observations
       obs_mean <- mean(observations)
 
       n <- nrow(sub_df)
-      res_mean <- mean(res)
-      res_se <- sd(res) / sqrt(n)
+      pred_err_mean <- mean(pred_err)
+      pred_err_se <- sd(pred_err) / sqrt(n)
 
       # MPE = Mean Prediction Error (bias)
-      bias_val <- qnorm(1 - alpha / 2) * res_se
+      bias_val <- qnorm(1 - alpha / 2) * pred_err_se
       bias <- tibble(
-        value = res_mean,
-        ci_low = res_mean - bias_val,
-        ci_up = res_mean + bias_val,
-        relative_value = res_mean / obs_mean
+        value = pred_err_mean,
+        ci_low = pred_err_mean - bias_val,
+        ci_up = pred_err_mean + bias_val,
+        relative_value = mean(pred_err / observations)
       )
 
       #   # ME = Maximal Error
-      #   max_e <- res %>% abs %>% max
+      #   max_e <- pred_err %>% abs %>% max
       #
       #   # AFE = Average Fold Error
+      #   # AAFE = Absolute Average Fold Error
       #
-      #   # method 1: old
-      # #   bool_positive <- (predictions / observations >= 0)
-      # #   obs_afe <- observations[bool_positive]
-      # #   pred_afe <- predictions[bool_positive]
-      # #
-      # #   logratio_afe <- log10(pred_afe / obs_afe)
-      # #   afe <- 10^(mean(abs(logratio_afe)[is.finite(logratio_afe)]))
-      #
-      #   # method 2: http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2691473/
+      #   References:
+      #   - http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2691473/
+      #   - https://www.ncbi.nlm.nih.gov/pubmed/26696327
       #   fe <- ifelse(predictions > observations, predictions / observations, observations / predictions)
       #   finite_fe <- fe[is.finite(fe)]
       #   afe <- 10^(finite_fe %>% log10 %>% abs %>% mean)
@@ -184,7 +184,7 @@ quality_criteria <- function(run,
       # fe <- ifelse(pred > observations, pred / observations, observations / pred)
 
       # Standard QC table
-      standard_qc <- tibble(observations, pred, res) %>%
+      standard_qc <- tibble(observations, pred, pred_err) %>%
         filter(observations !=0 & pred != 0) %>%
         mutate(
           square_obs = (observations - obs_mean)^2,
@@ -192,8 +192,9 @@ quality_criteria <- function(run,
           fe = (pred / observations)
         ) %>%
         summarise(
-          max_err = max(abs(res)),
-          afe = 10^(fe[is.finite(fe)] %>% log10() %>% abs() %>% mean())
+          max_err = max(abs(pred_err)),
+          aafe = 10^(fe[is.finite(fe)] %>% log10() %>% abs() %>% mean()),
+          afe = 10^(fe[is.finite(fe)] %>% log10() %>% mean())
         )
 
       # T-test observations predictions
@@ -235,6 +236,7 @@ quality_criteria <- function(run,
         ci_up = sqrt(t_test_square$conf.high),
         relative_value = value / obs_mean
       )
+      browser()
 
       tibble(
         n_observations = nrow(sub_df),
