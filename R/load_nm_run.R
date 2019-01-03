@@ -778,7 +778,8 @@ load_nm_run_directory <-
 
     if (cs_data$ignore$`@`) {
       # id_lines_to_remove <- which(!str_detect(substr(data_lines, 1, 1), "[0-9\\.]"))
-      id_lines_to_remove <- str_which(data_lines, "^[a-zA-Z]")
+      # id_lines_to_remove <- str_which(data_lines, "^[a-zA-Z]")
+      id_lines_to_remove <- str_which(data_lines, "^[^0-9]")
 
       lines_to_ignore <- c(lines_to_ignore, id_lines_to_remove)
     }

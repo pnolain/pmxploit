@@ -25,7 +25,7 @@ dplyr::slice
 #' @importFrom dplyr arrange between bind_cols bind_rows data_frame distinct everything filter first funs full_join group_by group_by_at groups inner_join lag last lead left_join matches mutate mutate_at one_of pull  rename right_join row_number select semi_join slice summarise summarise_all summarise_at tbl_df ungroup vars
 #' @importFrom stringr boundary fixed invert_match str_c str_detect str_extract str_extract_all str_locate str_locate_all str_match str_match_all str_pad str_replace str_replace_all str_replace_na str_split str_sub str_subset str_trim str_which word
 #' @importFrom tidyr complete crossing extract fill gather nesting separate spread unite nest unnest
-#' @importFrom readr read_delim read_file read_lines read_table write_lines
+#' @importFrom readr parse_number read_delim read_file read_lines read_table write_lines
 #' @importFrom purrr compact flatten keep quietly safely map map_chr map_df map_dbl map_lgl map_int map2 map2_chr map2_dbl modify modify_if pmap pmap_chr update_list
 #' @importFrom tibble add_column add_row as_tibble data_frame tibble tribble
 #' @importFrom lubridate interval seconds ymd_hms

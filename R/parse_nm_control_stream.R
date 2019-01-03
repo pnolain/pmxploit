@@ -591,10 +591,10 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
                    n_params <- NA_integer_
                    if(str_detect(tolower(rhs), "to|:")){
-                     params_seq <- str_split(rhs, pattern = "to|:")[[1]] %>% str_trim %>% as.integer
+                     params_seq <- str_split(rhs, pattern = "to|:")[[1]] %>% str_trim %>% parse_number
                      n_params <- params_seq[1]:params_seq[2]
                    } else if(str_detect(tolower(rhs), ",")) {
-                     n_params <- str_split(rhs, pattern = ",")[[1]] %>% str_trim %>% as.integer
+                     n_params <- str_split(rhs, pattern = ",")[[1]] %>% str_trim %>% parse_number
                    } else {
                      as.integer(n_params)
                    }
