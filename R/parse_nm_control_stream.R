@@ -902,7 +902,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
   if (length(records$TABLE) > 0) {
     if (verbose) print("Parsing $TABLE...")
 
-    tab_pattern <- ".+\\bFILE=([^\\s]+)"
+    tab_pattern <- ".+\\bFILE=([^\\s]+).+"
     tab_format_pattern <- ".+FORMAT=([^\\s]+)"
 
     tab_records_df <- cleaned_records_df %>%
