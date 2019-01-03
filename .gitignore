@@ -37,3 +37,6 @@ man/
 misc/
 # all *.tar.gz
 *.tar.gz
+
+tests/testthat/test-hidden.R
+tests/testthat/hidden
