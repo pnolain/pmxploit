@@ -897,12 +897,21 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     }
   }
 
+  # Extra files
+  include_pattern <- "^(include|INCLUDE)\\s([^\\s]+)"
+  include_files <- NULL
+  if (length(include_lines <- str_subset(lines, include_pattern)) > 0) {
+    include_text <- str_c(include_lines, collapse = " ")
+    include_matches <- str_match_all(include_text, include_pattern)[[1]]
+    include_files <- include_matches[, 3] %>% str_replace_all("'|\"", "")
+  }
+
   # $TABLE----
   tab_matches <- NULL
   if (length(records$TABLE) > 0) {
     if (verbose) print("Parsing $TABLE...")
 
-    tab_pattern <- ".+\\bFILE=([^\\s]+).+"
+    tab_pattern <- ".+\\bFILE=([^\\s]+).*"
     tab_format_pattern <- ".+FORMAT=([^\\s]+)"
 
     tab_records_df <- cleaned_records_df %>%
@@ -916,6 +925,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
           end <- x$end
 
           tab_def <- lines[start:end] %>%
+             .[!str_detect(., include_pattern)] %>% # remove INCLUDE instructions, if any
             str_c(collapse = " ") %>%
             str_replace("file", "FILE") %>%
             str_replace("format", "FORMAT")
@@ -1020,14 +1030,6 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
       distinct()
   }
 
-  # Extra files
-  include_pattern <- "(include|INCLUDE)\\s([^\\s]+)"
-  include_files <- NULL
-  if (length(include_lines <- str_subset(lines, include_pattern)) > 0) {
-    include_text <- str_c(include_lines, collapse = " ")
-    include_matches <- str_match_all(include_text, include_pattern)[[1]]
-    include_files <- include_matches[, 3] %>% str_replace_all("'|\"", "")
-  }
 
   # MSFI file
   msfi_file <- NULL
