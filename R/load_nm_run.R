@@ -59,6 +59,10 @@ load_nm_run_directory <-
 
       report_file <- run_results_files %>% filter(ext %in% c("rep", "lst", "out", "res")) %>% pull(file) %>% first()
 
+      if(length(xml_file) > 1){ # look for the correct xml file (not temporaryfile.xml)
+        xml_file <- str_subset(xml_file, fixed(str_c(tools::file_path_sans_ext(control_stream_file), ".xml")))
+      }
+
       # run files
       run_name <- tools::file_path_sans_ext(basename(xml_file))
 
@@ -121,7 +125,7 @@ load_nm_run_directory <-
     nonmem_node <- root_node[["nonmem"]]
 
     if (is.null(nonmem_node)) {
-      stop(simpleError("NONMEM run not recognised."))
+      stop(simpleError("NONMEM run not recognized: XML result file is invalid."))
     }
 
     problem_node <- nonmem_node[["problem"]]
@@ -1140,7 +1144,8 @@ load_nm_run_directory <-
           pmxploitab <- pmxploitab %>%
             bind_cols(select(tab, one_of(new_col_names)))
         } else {
-          warning(simpleWarning(sprintf("%s's number of rows is different than the dataset's.", names(run_tables)[i])))
+          if(length(estimations) > 0) # do not warn for simulations runs
+            warning(simpleWarning(sprintf("%s's number of rows is different than the dataset's.", names(run_tables)[i])))
         }
       }
     }
@@ -1538,7 +1543,7 @@ load_nm_run <-
           cs_exts <- c("ctl", "con", "mod", "nmctl")
 
           if (!(any(cs_exts %in% files_extensions) && "xml" %in% files_extensions)) {
-            stop(simpleError("NONMEM run not recognised."))
+            stop(simpleError("NONMEM run not recognized: no XML result file found."))
           }
 
           # dur <- system.time({
@@ -1633,10 +1638,10 @@ load_nm_run <-
 
             files_list <- archive_files_df$file
 
-            extra_files <- c(cs_data$extra_files, cs_data$subroutine$FILES)
+            # extra_files <- c(cs_data$extra_files, cs_data$subroutine$FILES)
 
-            if (length(extra_files) > 0) {
-              files_list <- c(files_list, str_c("./", extra_files))
+            if (length(cs_data$extra_files) > 0) {
+              files_list <- c(files_list, str_c("./", cs_data$extra_files))
             }
 
             if (length(mdata_file <- str_subset(archive_files, fixed("pmxploit_metadata.rds"))) == 1) {
