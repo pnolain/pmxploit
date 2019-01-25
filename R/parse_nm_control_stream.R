@@ -312,7 +312,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
     ignore_matches2 <- str_match_all(data_text, ignore_pattern2)
 
-    if (length(ignore_matches2) > 0) {
+    if (length(unlist(ignore_matches2)) > 0) {
       ignore_df2 <- ignore_matches2 %>%
         .[[1]] %>%
         as_tibble() %>%
