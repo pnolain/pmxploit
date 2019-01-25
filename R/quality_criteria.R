@@ -20,12 +20,10 @@
 #'   \eqn{pred_err_i = pred_i - obs_i} \itemize{ \item Standard QC \itemize{ \item Maximal
 #'   Error:
 #'   \deqn{ME=max(|obs-pred|)}
-#'   \item Average Fold Error (and Absolute Average Fold Error):
+#'   \item Absolute Average Fold Error:
 #'
-#'   \deqn{AFE=10^(mean(abs(log10(pred/obs))))}
 #'   \deqn{AAFE=10^(mean(log10(pred/obs)))}
-#'   For reference, see \url{https://www.ncbi.nlm.nih.gov/pubmed/26696327} and
-#'   \url{http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2691473/} }
+#'   For reference, see \url{https://www.ncbi.nlm.nih.gov/pubmed/26696327}}
 #'   \item Bias: Mean Prediction Error (MPE) \itemize{ \item Absolute:
 #'   \code{mean(pred_err)} \item Confidence interval for a given \code{alpha} \item
 #'   Relative: \code{mean(pred_err/obs)} } \item Precision: Root Mean Square
@@ -168,36 +166,32 @@ quality_criteria <- function(run,
         value = pred_err_mean,
         ci_low = pred_err_mean - bias_val,
         ci_up = pred_err_mean + bias_val,
-        relative_value = mean(pred_err / observations)
+        relative_value = value / obs_mean
+        # relative_value = mean(pred_err / observations)
       )
 
       #   # ME = Maximal Error
       #   max_e <- psred_err %>% abs %>% max
       #
-      #   # AFE = Average Fold Error
       #   # AAFE = Absolute Average Fold Error
       #
-      #   References:
-      #   - http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2691473/
+      #   Reference:
       #   - https://www.ncbi.nlm.nih.gov/pubmed/26696327
       #   fe <- ifelse(predictions > observations, predictions / observations, observations / predictions)
       #   finite_fe <- fe[is.finite(fe)]
-      #   afe <- 10^(finite_fe %>% log10 %>% abs %>% mean)
-
-      # fe <- ifelse(pred > observations, pred / observations, observations / pred)
+      #   aafe <- 10^(fe[is.finite(fe)] %>% log10() %>% abs() %>% mean
 
       # Standard QC table
       standard_qc <- tibble(observations, pred, pred_err) %>%
         filter(observations !=0 & pred != 0) %>%
         mutate(
           square_obs = (observations - obs_mean)^2,
-          square_pred = (pred - observations)^2,
+          square_pred = (pred_err)^2,
           fe = (pred / observations)
         ) %>%
         summarise(
           max_err = max(abs(pred_err)),
-          aafe = 10^(fe[is.finite(fe)] %>% log10() %>% abs() %>% mean()),
-          afe = 10^(fe[is.finite(fe)] %>% log10() %>% mean())
+          aafe = 10^(fe[is.finite(fe)] %>% log10() %>% abs() %>% mean())
         )
 
       # T-test observations predictions
