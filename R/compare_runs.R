@@ -78,7 +78,7 @@ compare_runs <- function(runs = NULL, estimation_number = NULL) {
         ),
         OBJ = est$final_ofv,
         EIGENRATIO = ifelse(is.null(est$eigenratio), NA, est$eigenratio),
-        `MAXIMUM CORRELATION` = est$max_correlation,
+        CORRELATION = est$correlation,
         NPAR = est$n_parameters,
         AIC = est$aic,
         BIC = est$bic,
