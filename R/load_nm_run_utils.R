@@ -92,7 +92,7 @@ load_matrix_estimate_table <- function(estimate_matrix_node, se_matrix_node) {
       estimate_se <- NA
     }
 
-    matrix_df <- data_frame(
+    matrix_df <- tibble(
       row = row,
       col = col,
       estimate = estimate,
@@ -103,7 +103,7 @@ load_matrix_estimate_table <- function(estimate_matrix_node, se_matrix_node) {
     )
   } else {
     zeros <- rep(0, nrow(lower_estimate))
-    matrix_df <- data_frame(
+    matrix_df <- tibble(
       row = seq_len(nrow(lower_estimate)),
       col = seq_len(nrow(lower_estimate)),
       estimate = zeros,

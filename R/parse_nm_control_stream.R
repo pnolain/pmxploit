@@ -111,7 +111,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     nums <- str_which(lines, str_c("^\\$(", x, ")"))
 
     if (length(nums) > 0) {
-      data_frame(name = rec, start = nums)
+      tibble(name = rec, start = nums)
     } else {
       NULL
     }
@@ -340,17 +340,17 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
     if (!is.na(advan)) {
       if (advan %in% c("ADVAN1", "ADVAN10")) {
-        compartments <- data_frame(cmt = 1, name = "Central", dv_target = TRUE)
+        compartments <- tibble(cmt = 1, name = "Central", dv_target = TRUE)
       } else if (advan == "ADVAN2") {
-        compartments <- data_frame(cmt = 1:2, name = c("Depot", "Central"), dv_target = c(FALSE, TRUE))
+        compartments <- tibble(cmt = 1:2, name = c("Depot", "Central"), dv_target = c(FALSE, TRUE))
       } else if (advan == "ADVAN3") {
-        compartments <- data_frame(cmt = 1:2, name = c("Central", "Peripheral"), dv_target = c(TRUE, FALSE))
+        compartments <- tibble(cmt = 1:2, name = c("Central", "Peripheral"), dv_target = c(TRUE, FALSE))
       } else if (advan == "ADVAN4") {
-        compartments <- data_frame(cmt = 1:3, name = c("Depot", "Central", "Peripheral"), dv_target = c(FALSE, TRUE, FALSE))
+        compartments <- tibble(cmt = 1:3, name = c("Depot", "Central", "Peripheral"), dv_target = c(FALSE, TRUE, FALSE))
       } else if (advan == "ADVAN11") {
-        compartments <- data_frame(cmt = 1:3, name = c("Central", "Peripheral1", "Peripheral2"), dv_target = c(TRUE, FALSE, FALSE))
+        compartments <- tibble(cmt = 1:3, name = c("Central", "Peripheral1", "Peripheral2"), dv_target = c(TRUE, FALSE, FALSE))
       } else if (advan == "ADVAN12") {
-        compartments <- data_frame(cmt = 1:4, name = c("Depot", "Central", "Peripheral1", "Peripheral2"), dv_target = c(FALSE, TRUE, FALSE, FALSE))
+        compartments <- tibble(cmt = 1:4, name = c("Depot", "Central", "Peripheral1", "Peripheral2"), dv_target = c(FALSE, TRUE, FALSE, FALSE))
       }
     }
 
@@ -376,7 +376,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     cp_names <- cp_matches[[1]][, 3]
 
     if (length(cp_names) > 0) {
-      compartments <- data_frame(
+      compartments <- tibble(
         cmt = seq_along(cp_names),
         name = cp_names
       )
@@ -385,7 +385,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
       n_cmt_matches <- str_match(mod_rec_lines, n_cmt_pattern)
       if (length(n_cmt_matches) > 0) {
         n_cmts <- as.integer(n_cmt_matches[, 2])
-        compartments <- data_frame(
+        compartments <- tibble(
           cmt = seq_len(n_cmts),
           name = str_c("CMT_", cmt)
         )
@@ -766,7 +766,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
   if (length(records$ESTIMATION) > 0) {
     if (verbose) print("Parsing $ESTIMATION...")
 
-    est_matches <- data_frame(
+    est_matches <- tibble(
       method = character(),
       interaction = logical()
     )
@@ -811,7 +811,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
             method_txt <- str_c(ifelse(!is.na(m[, 5]), "CENTERING ", ""), method_txt)
           }
 
-          data_frame(
+          tibble(
             n = i,
             method = method_txt,
             start = start,
@@ -858,7 +858,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
   if (length(records$SIMULATION) > 0) {
     if (verbose) print("Parsing $SIMULATION...")
 
-    sim_matches <- data_frame(
+    sim_matches <- tibble(
       method = character(),
       interaction = logical()
     )
@@ -886,7 +886,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
           n_subpb <- m[, 3]
 
-          data_frame(
+          tibble(
             n = i,
             n_subproblems = as.integer(n_subpb)
           )
@@ -989,7 +989,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
             mf <- str_match(tab_def, tab_format_pattern)
 
-            t_df <- data_frame(
+            t_df <- tibble(
               file = file,
               firstonly = str_detect(m[, 1], "FIRSTONLY"),
               noheader = str_detect(m[, 1], "NOHEADER"),
