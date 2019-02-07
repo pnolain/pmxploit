@@ -1,7 +1,7 @@
 #' Residuals plot
 #'
 #' Plot residuals (e.g. \code{CWRES}, \code{IWRES}, \code{NPDE}) as either a
-#' scatterplot (versus a regressor), an histogram (distribution) or a quantile-quantile plot.
+#' scatterplot (versus an independent variable), an histogram (distribution) or a quantile-quantile plot.
 #'
 #' @param residuals character vector of column names of residuals.
 #' @param compartment integer vector of the numbers of the compartments of residuals.
@@ -27,30 +27,30 @@
 #'
 #' @examples
 #' EXAMPLERUN %>%
-#'   plot_residuals(compartment = 2, regressor = c("TIME", "PRED"), residuals = "CWRES")
+#'   plot_residuals(compartment = 2, idv = c("TIME", "PRED"), residuals = "CWRES")
 #'
 #' EXAMPLERUN %>%
 #'   group_by(CMT) %>%
-#'   plot_residuals(compartment = 2:3, regressor = c("TIME", "PRED"), residuals = "CWRES")
+#'   plot_residuals(compartment = 2:3, idv = c("TIME", "PRED"), residuals = "CWRES")
 #'
 #' EXAMPLERUN %>%
-#'   plot_residuals(compartment = 2, regressor = c("TIME", "PRED"),
+#'   plot_residuals(compartment = 2, idv = c("TIME", "PRED"),
 #'                  residuals = "CWRES", smoothing_method = "lm")
 #'
 #' EXAMPLERUN %>%
-#'   plot_residuals(compartment = 2, regressor = c("TIME", "PRED"),
+#'   plot_residuals(compartment = 2, idv = c("TIME", "PRED"),
 #'                  residuals = "CWRES", type = "histogram")
 #' EXAMPLERUN %>%
-#'   plot_residuals(compartment = 2, regressor = c("TIME", "PRED"),
+#'   plot_residuals(compartment = 2, idv = c("TIME", "PRED"),
 #'                  residuals = "CWRES", type = "qq")
 #'
 #' EXAMPLERUN %>%
 #'   group_by(STUD) %>%
-#'   plot_residuals(compartment = 2, regressor = c("TIME", "PRED"),
+#'   plot_residuals(compartment = 2, idv = c("TIME", "PRED"),
 #'                  residuals = "CWRES", type = "qq")
 plot_residuals <- function(run,
                            compartment = NULL,
-                           regressor = "TIME",
+                           idv = "TIME",
                            residuals,
                            absolute_residuals = FALSE,
                            keep_time_zero = FALSE,
@@ -79,10 +79,10 @@ plot_residuals <- function(run,
   }
 
   missing_residuals <- residuals[!(residuals %in% colnames(run$tables$pmxploitab))]
-  missing_regressor <- regressor[!(regressor %in% colnames(run$tables$pmxploitab))]
+  missing_idv <- idv[!(idv %in% colnames(run$tables$pmxploitab))]
 
-  if (length(missing_regressor) > 0) {
-    stop(simpleError(sprintf("Missing column(s): %s.", paste(missing_regressor, collapse = ", "))))
+  if (length(missing_idv) > 0) {
+    stop(simpleError(sprintf("Missing column(s): %s.", paste(missing_idv, collapse = ", "))))
   }
   if (length(missing_residuals) > 0) {
     stop(simpleError(sprintf("Missing column(s): %s.", paste(missing_residuals, collapse = ", "))))
@@ -146,17 +146,17 @@ plot_residuals <- function(run,
   }
 
   g_df <- df %>%
-    select(ID, TIME, CMT, one_of(c(regressor, residuals, names(split_by)))) %>%
+    select(ID, TIME, CMT, one_of(c(idv, residuals, names(split_by)))) %>%
     gather(Residuals, Residuals_Value, one_of(residuals), factor_key = TRUE) %>%
-    gather(Regressor, Regressor_Value, one_of(regressor), factor_key = TRUE)
+    gather(idv, idv_Value, one_of(idv), factor_key = TRUE)
 
-  mapping <- aes(x = Regressor_Value, y = Residuals_Value)
+  mapping <- aes(x = idv_Value, y = Residuals_Value)
 
   # if(nrow(cmt_selection) > 1){
   #   mapping$colour <- quote(CMT)
   # }
 
-  one_plot <- (length(regressor) == 1 & length(residuals) == 1 & length(split_by) == 0)
+  one_plot <- (length(idv) == 1 & length(residuals) == 1 & length(split_by) == 0)
 
   corrected_split_names <- sprintf("`%s`", names(split_by))
 
@@ -181,10 +181,10 @@ plot_residuals <- function(run,
     }
 
     if (!one_plot) {
-      plot_formula <- Regressor ~ Residuals
+      plot_formula <- idv ~ Residuals
 
       if (!is.null(split_by)) {
-        plot_formula <- as.formula(sprintf("Regressor ~ Residuals + %s", paste(corrected_split_names, collapse = "+")))
+        plot_formula <- as.formula(sprintf("idv ~ Residuals + %s", paste(corrected_split_names, collapse = "+")))
       }
 
       g <- g + facet_wrap(plot_formula, scales = facet_scales, labeller = label_both)
@@ -208,8 +208,8 @@ plot_residuals <- function(run,
     }
 
     g_df <- g_df %>%
-      select(-Regressor, -Regressor_Value) %>%
-      slice(1:(n() / length(regressor)))
+      select(-idv, -idv_Value) %>%
+      slice(1:(n() / length(idv)))
 
     if (!is.null(split_by)) {
       grps <- map(c("Residuals", names(split_by)), as.name)
@@ -256,8 +256,8 @@ plot_residuals <- function(run,
     }
   } else if (type == "histogram") {
     g_df <- g_df %>%
-      select(-Regressor, -Regressor_Value) %>%
-      slice(1:(n() / length(regressor)))
+      select(-idv, -idv_Value) %>%
+      slice(1:(n() / length(idv)))
 
     if (!is.null(split_by)) {
       grps <- map(c("Residuals", names(split_by)), as.name)
@@ -328,7 +328,7 @@ plot_residuals <- function(run,
       g <- g +
         labs(title = sprintf(
           "%s (%s vs %s)", paste(cmt_selection$name, collapse = "/"),
-          paste(residuals, collapse = "/"), paste(regressor, collapse = "/")
+          paste(residuals, collapse = "/"), paste(idv, collapse = "/")
         )) +
         scale_color_discrete(
           breaks = cmt_selection$cmt,
@@ -352,11 +352,11 @@ plot_residuals <- function(run,
     if(type == "qq"){
       g <- g+labs(x = "Reference distribution quantiles", y = y_lab)
     } else if (one_plot) {
-      g <- g+labs(x = regressor,
+      g <- g+labs(x = idv,
              y = ifelse(absolute_residuals, sprintf("|%s|", residuals), residuals))
     } else {
       if (type == "scatterplot")
-        x_lab <- ifelse(length(regressor) == 1, regressor, "Regressor")
+        x_lab <- ifelse(length(idv) == 1, idv, "Indepedent variable")
 
       g <- g + labs(
         x = x_lab,

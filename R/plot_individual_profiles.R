@@ -5,7 +5,7 @@
 #' @param facetted logical. If \code{TRUE} (default), plots each individual inside a separate facet.
 #' @param n_row integer. Number of rows of facets.
 #' @param n_col integer. Number of columns of facets.
-#' @param regressor character. Name of the regressor column to plot on the x-axis. Default is \code{"TIME"}.
+#' @param idv character. Name of the independent variable column to plot on the x-axis. Default is \code{"TIME"}.
 #' @param predictions_dots logical. If \code{TRUE} plot predictions as dots on top of the profile lines.
 #' @param show_observations logical. If \code{TRUE} plot observations.
 #' @param categorical_covariate character. A categorical covariate to split the data. May be useful for covariates that vary within an individual.
@@ -20,7 +20,7 @@
 #'
 #' EXAMPLERUN %>% plot_individual_profiles(compartment = 2, predictions = "PRED", facetted = FALSE)
 plot_individual_profiles <- function(run, ids = NULL, compartment, predictions = "PRED",
-                                     regressor = "TIME", log_dv = FALSE,
+                                     idv = "TIME", log_dv = FALSE,
                                      predictions_dots = TRUE, show_observations = TRUE,
                                      categorical_covariate = NULL,
                                      x_scale = "linear", y_scale = "linear", logticks_annotation = TRUE,
@@ -108,15 +108,15 @@ plot_individual_profiles <- function(run, ids = NULL, compartment, predictions =
   }
 
   df <- df %>%
-    select(ID, one_of(regressor), CMT, DV, MDV, one_of(c(predictions, categorical_covariate))) %>%
+    select(ID, one_of(idv), CMT, DV, MDV, one_of(c(predictions, categorical_covariate))) %>%
     mutate(CMT = plyr::mapvalues(CMT, run$model$compartments$cmt, run$model$compartments$name, warn_missing = FALSE))
 
   g_df <- df %>% gather(Prediction, Value, one_of(predictions))
 
-  reg_name <- as.name(regressor)
+  reg_name <- as.name(idv)
 
   mapping <- aes(y = Value, colour = Prediction, group = interaction(ID, Prediction))
-  mapping$x <- as.symbol(regressor)
+  mapping$x <- as.symbol(idv)
 
   g <- ggplot(data = g_df, mapping = mapping) +
     geom_line()
@@ -127,7 +127,7 @@ plot_individual_profiles <- function(run, ids = NULL, compartment, predictions =
 
   if (show_observations) {
     obs_mapping <- aes(y = DV, shape = MDV, group = ID)
-    obs_mapping$x <- as.symbol(regressor)
+    obs_mapping$x <- as.symbol(idv)
 
     df_obs <- df %>%
       filter(!is.na(DV)) %>%

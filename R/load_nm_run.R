@@ -1252,7 +1252,7 @@ load_nm_run_directory <-
       arrange(type, name)
 
 
-    time_regressors <- tibble(column = character(), name = character(), unit = character())
+    independent_variables <- tibble(column = character(), name = character(), unit = character())
     prediction_types <- NULL
     residual_types <- NULL
 
@@ -1260,7 +1260,7 @@ load_nm_run_directory <-
       pmxploitab_cols <- colnames(pmxploitab)
 
       if (any(c("TIME", "TAD") %in% pmxploitab_cols)) {
-        time_regressors <- time_regressors %>%
+        independent_variables <- independent_variables %>%
           add_row(
             column = intersect(c("TIME", "TAD"), pmxploitab_cols),
             name = column,
@@ -1326,7 +1326,7 @@ load_nm_run_directory <-
       compartments = compartments,
       parameters = params_df,
       covariates = covariates_df,
-      regressors = time_regressors,
+      independent_variables = independent_variables,
       predictions = prediction_types,
       residuals = residual_types
     )
