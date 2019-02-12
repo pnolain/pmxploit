@@ -1,8 +1,8 @@
 #' Spaghetti plot
 #'
-#' Plot of observed profiles versus continuous regressor (e.g. TIME or TAD).
+#' Plot of observed profiles versus an independent variable (e.g. TIME or TAD).
 #'
-#' @param regressor character. Name of the column used as regressor. Default is
+#' @param idv character. Name of the column used as independent variable. Default is
 #'   \code{"TIME"}.
 #' @param log_dv logical. Set it to \code{TRUE} is dependent variable is in
 #'   log-scale in the dataset. Default is \code{FALSE}.
@@ -33,7 +33,7 @@
 #' EXAMPLERUN %>%
 #'   group_by(SEX) %>%
 #'   plot_observed_profiles(compartment = 2, y_scale = "log", facetted = FALSE)
-plot_observed_profiles <- function(run, compartment = NULL, regressor = "TIME", ids = NULL,
+plot_observed_profiles <- function(run, compartment = NULL, idv = "TIME", ids = NULL,
                                    show_mdv = TRUE, log_dv = FALSE, mean_profiles = FALSE,
                                    x_scale = "linear", y_scale = "linear", logticks_annotation = TRUE,
                                    facetted = TRUE,
@@ -115,9 +115,9 @@ plot_observed_profiles <- function(run, compartment = NULL, regressor = "TIME", 
     }
   }
 
-  df <- df %>% select(ID, CMT, DV, MDV, one_of(c(regressor, names(split_by))))
+  df <- df %>% select(ID, CMT, DV, MDV, one_of(c(idv, names(split_by))))
 
-  plot_mapping <- aes_string(x = regressor, y = "DV", group = "ID")
+  plot_mapping <- aes_string(x = idv, y = "DV", group = "ID")
 
   if (length(split_by) > 0) {
     split_group <- paste(names(split_by), collapse = ".")
@@ -137,7 +137,7 @@ plot_observed_profiles <- function(run, compartment = NULL, regressor = "TIME", 
 
   if (mean_profiles) {
     if (length(split_by) > 0) {
-      grps <- map(c(regressor, names(split_by)), as.name)
+      grps <- map(c(idv, names(split_by)), as.name)
       df <- df %>%
         filter(MDV == 0) %>%
         group_by(!!!grps) %>%
@@ -146,7 +146,7 @@ plot_observed_profiles <- function(run, compartment = NULL, regressor = "TIME", 
     } else {
       df <- df %>%
         filter(MDV == 0) %>%
-        group_by(!!!as.name(regressor)) %>%
+        group_by(!!!as.name(idv)) %>%
         summarise(DV = mean(DV, na.rm = TRUE))
     }
 
@@ -202,7 +202,7 @@ plot_observed_profiles <- function(run, compartment = NULL, regressor = "TIME", 
   }
 
   if (auto_legend) {
-    xlab <- ifelse(regressor == "TIME", "Time", ifelse(regressor == "TAD", "Time after dose", regressor))
+    xlab <- ifelse(idv == "TIME", "Time", ifelse(idv == "TAD", "Time after dose", idv))
 
     g <- g +
       labs(

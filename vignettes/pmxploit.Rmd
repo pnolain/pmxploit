@@ -110,7 +110,7 @@ plot_dv_vs_predictions(run, compartment = 2, predictions = c("PRED", "IPRED"), x
 ## Residuals
 
 ```{r}
-plot_residuals(run, compartment = 2, residuals = "CWRES", regressor = c("PRED", "TIME"), reference_value = 2)
+plot_residuals(run, compartment = 2, residuals = "CWRES", idv = c("PRED", "TIME"), reference_value = 2)
 
 plot_residuals(run, compartment = 2, residuals = c("CWRES"), type = "histogram")
 ```

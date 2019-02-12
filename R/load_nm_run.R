@@ -59,6 +59,10 @@ load_nm_run_directory <-
 
       report_file <- run_results_files %>% filter(ext %in% c("rep", "lst", "out", "res")) %>% pull(file) %>% first()
 
+      if(length(xml_file) > 1){ # look for the correct xml file (not temporaryfile.xml)
+        xml_file <- str_subset(xml_file, fixed(str_c(tools::file_path_sans_ext(control_stream_file), ".xml")))
+      }
+
       # run files
       run_name <- tools::file_path_sans_ext(basename(xml_file))
 
@@ -121,7 +125,7 @@ load_nm_run_directory <-
     nonmem_node <- root_node[["nonmem"]]
 
     if (is.null(nonmem_node)) {
-      stop(simpleError("NONMEM run not recognised."))
+      stop(simpleError("NONMEM run not recognized: XML result file is invalid."))
     }
 
     problem_node <- nonmem_node[["problem"]]
@@ -283,7 +287,7 @@ load_nm_run_directory <-
           }
 
           # make a data frame...
-          thetas_df <- data_frame(
+          thetas_df <- tibble(
             id = thetas_ids,
             estimate = thetas_values,
             se = thetas_se,
@@ -326,7 +330,7 @@ load_nm_run_directory <-
 
           etas_id_col <- rep(etas_names, cs_data$subpopulations)
 
-          eta_bars_df <- data_frame(
+          eta_bars_df <- tibble(
             id = etas_id_col,
             value = eta_bar[, 1],
             se = eta_bar_se[, 1]
@@ -415,14 +419,14 @@ load_nm_run_directory <-
           ebv_shrinkage_matrix <- load_matrix(est_node[[ebv_shrink_tag]])
 
           if (!is.null(eta_shrinkage_matrix)) {
-            eta_shrinkage <- data_frame(parameter = etas_id_col, shrinkage = eta_shrinkage_matrix[, 1] / 100)
+            eta_shrinkage <- tibble(parameter = etas_id_col, shrinkage = eta_shrinkage_matrix[, 1] / 100)
 
             if (cs_data$subpopulations > 1) {
               eta_shrinkage$subpop <- rep(subpop_names, each = length(etas_names))
             }
           }
           if (!is.null(ebv_shrinkage_matrix)) {
-            ebv_shrinkage <- data_frame(parameter = etas_id_col, shrinkage = ebv_shrinkage_matrix[, 1] / 100)
+            ebv_shrinkage <- tibble(parameter = etas_id_col, shrinkage = ebv_shrinkage_matrix[, 1] / 100)
 
             if (cs_data$subpopulations > 1) {
               ebv_shrinkage$subpop <- rep(subpop_names, each = length(etas_names))
@@ -478,7 +482,7 @@ load_nm_run_directory <-
           eps_id_col <- rep(names(eps_ids), cs_data$subpopulations)
 
           if (!is.null(eps_shrinkage_matrix)) {
-            epsilon_shrinkage <- data_frame(
+            epsilon_shrinkage <- tibble(
               parameter = eps_id_col,
               shrinkage = eps_shrinkage_matrix[, 1] / 100
             )
@@ -546,6 +550,7 @@ load_nm_run_directory <-
           diag(temp_correlation_matrix) <- NA
 
           estimation$correlation <- any(!is.na(temp_correlation_matrix) & temp_correlation_matrix >= 0.96)
+          # estimation$max_correlation <- max(temp_correlation_matrix, na.rm = TRUE)
         }
 
         estimation$correlation_matrix <- correlation_matrix
@@ -613,7 +618,7 @@ load_nm_run_directory <-
         omega_y_names <- plyr::mapvalues(omega_y, from = etas_df$n, to = etas_df$name)
         omega_ids <- sprintf("OMEGA(%s,%s)", omega_x, omega_y)
 
-        omega_params_df <- data_frame(
+        omega_params_df <- tibble(
           id = sprintf("OMEGA(%s,%s)", omega_x, omega_y),
           type = "omega",
           name = sprintf("OMEGA(%s,%s)", omega_x_names, omega_y_names)
@@ -630,7 +635,7 @@ load_nm_run_directory <-
           sigma_y <- map(sigma_n, function(x) 1:(sigma_n)[x]) %>% unlist()
         }
 
-        sigma_params_df <- data_frame(
+        sigma_params_df <- tibble(
           id = sprintf("SIGMA(%s,%s)", sigma_x, sigma_y),
           type = "sigma",
           name = sprintf("SIGMA(EPS%s,EPS%s)", sigma_x, sigma_y)
@@ -778,7 +783,8 @@ load_nm_run_directory <-
 
     if (cs_data$ignore$`@`) {
       # id_lines_to_remove <- which(!str_detect(substr(data_lines, 1, 1), "[0-9\\.]"))
-      id_lines_to_remove <- str_which(data_lines, "^[a-zA-Z]")
+      # id_lines_to_remove <- str_which(data_lines, "^[a-zA-Z]")
+      id_lines_to_remove <- str_which(data_lines, "^[^0-9\\.]")
 
       lines_to_ignore <- c(lines_to_ignore, id_lines_to_remove)
     }
@@ -1110,7 +1116,7 @@ load_nm_run_directory <-
     if (output_cmt %in% as.numeric(as.character(dv_cmts))) {
       compartments <- bind_rows(
         compartments,
-        data_frame(
+        tibble(
           cmt = output_cmt, name = "Output", dv_target = TRUE
         )
       )
@@ -1139,7 +1145,8 @@ load_nm_run_directory <-
           pmxploitab <- pmxploitab %>%
             bind_cols(select(tab, one_of(new_col_names)))
         } else {
-          warning(simpleWarning(sprintf("%s's number of rows is different than the dataset's.", names(run_tables)[i])))
+          if(length(estimations) > 0) # do not warn for simulations runs
+            warning(simpleWarning(sprintf("%s's number of rows is different than the dataset's.", names(run_tables)[i])))
         }
       }
     }
@@ -1162,7 +1169,7 @@ load_nm_run_directory <-
       ))
 
       if (length(par_names) > 0) {
-        individual_params_df <- data_frame(
+        individual_params_df <- tibble(
           id = par_names, type = "individual", name = par_names,
           column = par_names
         )
@@ -1204,7 +1211,7 @@ load_nm_run_directory <-
     params_df <- params_df %>%
       arrange(type, id)
 
-    covariates_df <- data_frame(
+    covariates_df <- tibble(
       column = character(),
       type = character(),
       name = character()
@@ -1217,7 +1224,7 @@ load_nm_run_directory <-
       cat_cov_names <- setdiff(all_cols, nm_reserved_names)
 
       if (length(cat_cov_names) > 0) {
-        cat_covs_df <- data_frame(column = cat_cov_names, type = "categorical", name = cat_cov_names)
+        cat_covs_df <- tibble(column = cat_cov_names, type = "categorical", name = cat_cov_names)
         covariates_df <- bind_rows(covariates_df, cat_covs_df)
       }
     }
@@ -1228,7 +1235,7 @@ load_nm_run_directory <-
       cont_cov_names <- setdiff(all_cols, nm_reserved_names)
 
       if (length(cont_cov_names) > 0) {
-        cont_covs_df <- data_frame(column = cont_cov_names, type = "continuous", name = cont_cov_names)
+        cont_covs_df <- tibble(column = cont_cov_names, type = "continuous", name = cont_cov_names)
         covariates_df <- bind_rows(covariates_df, cont_covs_df)
       }
     }
@@ -1245,7 +1252,7 @@ load_nm_run_directory <-
       arrange(type, name)
 
 
-    time_regressors <- tibble(column = character(), name = character(), unit = character())
+    independent_variables <- tibble(column = character(), name = character(), unit = character())
     prediction_types <- NULL
     residual_types <- NULL
 
@@ -1253,7 +1260,7 @@ load_nm_run_directory <-
       pmxploitab_cols <- colnames(pmxploitab)
 
       if (any(c("TIME", "TAD") %in% pmxploitab_cols)) {
-        time_regressors <- time_regressors %>%
+        independent_variables <- independent_variables %>%
           add_row(
             column = intersect(c("TIME", "TAD"), pmxploitab_cols),
             name = column,
@@ -1319,7 +1326,7 @@ load_nm_run_directory <-
       compartments = compartments,
       parameters = params_df,
       covariates = covariates_df,
-      regressors = time_regressors,
+      independent_variables = independent_variables,
       predictions = prediction_types,
       residuals = residual_types
     )
@@ -1537,12 +1544,12 @@ load_nm_run <-
           cs_exts <- c("ctl", "con", "mod", "nmctl")
 
           if (!(any(cs_exts %in% files_extensions) && "xml" %in% files_extensions)) {
-            stop(simpleError("NONMEM run not recognised."))
+            stop(simpleError("NONMEM run not recognized: no XML result file found."))
           }
 
           # dur <- system.time({
 
-          cs_file <- data_frame(filename = archive_files) %>%
+          cs_file <- tibble(filename = archive_files) %>%
             mutate(
               ext = ordered(tools::file_ext(filename), cs_exts),
               file_sans_ext = tools::file_path_sans_ext(basename(filename))
@@ -1597,7 +1604,7 @@ load_nm_run <-
           } else {
             run_name <- tools::file_path_sans_ext(basename(cs_file_path))
 
-            archive_files_df <- data_frame(file = archive_files) %>%
+            archive_files_df <- tibble(file = archive_files) %>%
               mutate(
                 file2 = ifelse(substring(file, 1, 2) == "./", substring(file, 3), file), # trick when tar.gz archives that contain subdirectories
                 dir_name = dirname(file),
@@ -1632,10 +1639,10 @@ load_nm_run <-
 
             files_list <- archive_files_df$file
 
-            extra_files <- c(cs_data$extra_files, cs_data$subroutine$FILES)
+            # extra_files <- c(cs_data$extra_files, cs_data$subroutine$FILES)
 
-            if (length(extra_files) > 0) {
-              files_list <- c(files_list, str_c("./", extra_files))
+            if (length(cs_data$extra_files) > 0) {
+              files_list <- c(files_list, str_c("./", cs_data$extra_files))
             }
 
             if (length(mdata_file <- str_subset(archive_files, fixed("pmxploit_metadata.rds"))) == 1) {
