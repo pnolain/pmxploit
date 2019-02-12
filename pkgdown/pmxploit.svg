@@ -13,7 +13,7 @@
    viewBox="0 0 670 774"
    version="1.1"
    inkscape:version="0.91 r13725"
-   sodipodi:docname="pmxploit3.svg">
+   sodipodi:docname="pmxploit.svg">
   <defs
      id="defs6358">
     <clipPath
@@ -2736,14 +2736,14 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1680"
-     inkscape:window-height="1021"
+     inkscape:window-height="985"
      id="namedview6356"
      showgrid="true"
      inkscape:showpageshadow="false"
      inkscape:zoom="0.64035351"
-     inkscape:cx="420.56095"
-     inkscape:cy="323.88485"
-     inkscape:window-x="1680"
+     inkscape:cx="52.01452"
+     inkscape:cy="325.90651"
+     inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2">
@@ -2764,7 +2764,7 @@
     </rdf:RDF>
   </metadata>
   <path
-     style="fill:#75e598;fill-rule:evenodd;stroke:#094b28;stroke-width:37.9980011;stroke-opacity:1;fill-opacity:0.98823529"
+     style="fill:#ffffff;fill-rule:evenodd;stroke:#094b28;stroke-width:37.9980011;stroke-opacity:1;fill-opacity:1"
      inkscape:connector-curvature="0"
      d="M 334.91,751.54 19,569.11 l -10e-6,-364.78 315.91,-182.39 315.91,182.39 1e-5,364.78 z"
      id="path2997" />
