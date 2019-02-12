@@ -7,6 +7,11 @@
 #' @export
 #'
 #' @examples
+#' \notrun{
+#' nm_check(control_file = "control_file.ctl",
+#' nmcheck_exe = "/path/to/nmtran.exe",
+#' call_template = "cat {control_file} | {nmcheck_exe}")
+#' }
 nm_check <- function(control_file,
                      nmcheck_exe = NULL,
                      call_template = NULL) {
@@ -23,8 +28,6 @@ nm_check <- function(control_file,
   owd <- setwd(dirname(control_file))
   on.exit(setwd(owd))
 
-  #safe_call <- safely(~ system2("cat", args = sprintf("%s | %s", basename(control_file), nmcheck_cmd), stdout = TRUE))
-  # check_cmd <- str_c(nmcheck_cmd, basename(control_file), sep = " ")
   nmcheck_cmd <- glue::glue(call_template)
 
   safe_call <- safely(~ system(nmcheck_cmd, intern = TRUE))
