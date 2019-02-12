@@ -17,7 +17,7 @@ library(pmxploit)
 theme_set(theme_pmx())
 ```
 
-# PMxploit <img id="logo" src="pkgdown/pmxploit.svg" alt="pmxploit" width="125px" align="right" />
+# PMxploit <img id="logo" src="pkgdown/pmxploit_animated.svg" alt="pmxploit" width="125px" align="right" />
 
 
 
