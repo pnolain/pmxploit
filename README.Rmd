@@ -19,7 +19,7 @@ theme_set(theme_pmx())
 
 # PMxploit
 
-<img id="logo" src="pmxploit.svg" alt="pmxploit" />
+<img id="logo" src="docs/pmxploit.svg" alt="pmxploit" width="125px" />
 
 The goal of PMXploit is to facilitate NONMEM post-processing analysis. It provides helper functions for visualizing and summarizing population analyses results, detecting outliers, computing numerical quality criteria and comparing multiple run results.
 
