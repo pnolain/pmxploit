@@ -16,7 +16,6 @@
 #' @export
 #'
 #' @examples
-#' @examples
 #' \notrun{
 #' nm_exec(control_file = "control_file.ctl", nonmem_exe = "/path/to/nmfe")
 #' }
