@@ -62,7 +62,10 @@ EXAMPLERUN <- load_nm_run("data-raw/TMDD_Djebli_al") %>%
     "Glomerular filtration rate (mL/min)" = "GFR",
     "Baseline total PCSK9 (nM)" = "TBSPCSK",
     "Weight (kg)" = "WT"
-  ))
+  )) %>%
+  rename_compartments(compartments = c("Total Alirocumab" = 2,
+                                       "Total PCSK9" = 3))
+
 
 EXAMPLERUN$info$path <- "~/pmxploit/example.tar.gz"
 
