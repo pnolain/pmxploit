@@ -121,7 +121,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
   cleaned_records_df <- records_df %>%
     arrange(start) %>%
-    mutate(end = ifelse(row_number() == n(), length(lines), lead(start) - 1L))
+    mutate(end = ifelse(row_number() == dplyr::n(), length(lines), lead(start) - 1L))
 
   if (has_prior & !any(records_df$name %in% c("THETAP", "THETAPV", "OMEGAP", "OMEGAPD", "SIGMAP", "SIGMAPD"))) { # read only first $THETA and $OMEGA section
     temp_rec_df <- cleaned_records_df %>%
@@ -153,7 +153,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
   grouped_records_df <- cleaned_records_df %>%
     group_by(name) %>%
     summarise(
-      n = n(),
+      n = dplyr::n(),
       start = as.integer(min(start)),
       end = as.integer(max(end))
     ) %>%
@@ -1017,7 +1017,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
         if (length(dup_tables)) {
           warning(simpleWarning(sprintf("Duplicated $TABLE statements: %s.", str_c(dup_tables, collapse = ", "))))
 
-          tab_matches <- tab_matches %>% group_by(file) %>% slice(n()) %>% ungroup()
+          tab_matches <- tab_matches %>% group_by(file) %>% slice(dplyr::n()) %>% ungroup()
           #        tab_matches <- tab_matches %>% slice(which(!duplicated(table_filenames)))
         }
       }

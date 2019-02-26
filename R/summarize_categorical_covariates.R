@@ -73,7 +73,7 @@ summarize_categorical_covariates <- function(run,
   }
 
   summed_df <- g_df %>%
-    summarise(n = n()) %>%
+    summarise(n = dplyr::n()) %>%
     mutate(frequency = n / sum(n)) %>%
     ungroup()
 

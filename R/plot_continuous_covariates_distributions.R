@@ -181,7 +181,7 @@ plot_continuous_covariates_distributions <- function(run, covariates = NULL,
       theo25 = qq_dist(0.25),
       theo75 = qq_dist(0.75),
       slope = (q25 - q75) / (theo25 - theo75),
-      int = q25 - slope * theo25, n = n()
+      int = q25 - slope * theo25, n = dplyr::n()
     )
 
 

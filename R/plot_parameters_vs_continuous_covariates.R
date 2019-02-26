@@ -249,7 +249,7 @@ plot_parameters_vs_continuous_covariates <-
         rename(correlation = value) %>%
         filter(!is.na(correlation)) %>%
         group_by(covariate) %>%
-        mutate(N = n()) %>%
+        mutate(N = dplyr::n()) %>%
         ungroup() %>%
         arrange(desc(N)) %>%
         select(-N)

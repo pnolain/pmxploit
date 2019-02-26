@@ -64,6 +64,6 @@ EXAMPLERUN <- load_nm_run("data-raw/TMDD_Djebli_al") %>%
     "Weight (kg)" = "WT"
   ))
 
-EXAMPLERUN$info$path <- "/pmxploit/example/TMDD_Djebli_al"
+EXAMPLERUN$info$path <- "~/pmxploit/example.tar.gz"
 
 usethis::use_data(nm_reserved_names, nonmem_txtmsgs, nm_predictions, nm_residuals, EXAMPLERUN, internal = TRUE, overwrite = TRUE)

@@ -6,25 +6,87 @@ output:
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 ```{r, echo = FALSE, message=FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "README-"
-)
+knitr::opts_chunk$set(collapse = TRUE,
+                      comment = "#>",
+                      fig.path   = 'man/figures/',
+                      fig.align  = 'center',
+                      out.width  = '50%', 
+                      dev        = 'png',
+                      dev.args   = list(type = 'cairo'))
 
 library(tidyverse)
 library(pmxploit)
-theme_set(theme_pmx())
+theme_set(theme_minimal())
+
+run <- pmxploit::EXAMPLERUN
 ```
 
-# PMxploit <img id="logo" src="pkgdown/pmxploit.svg" alt="pmxploit" width="125px" align="right" />
+# pmxploit <img id="logo" src="pkgdown/pmxploit.svg" alt="pmxploit" width="125px" align="right" />
 
+The goal of **pmxploit** is to facilitate the post-processing analysis of non-linear mixed effects models developed with NONMEM.
 
-
-The goal of PMXploit is to facilitate NONMEM post-processing analysis. It provides helper functions for visualizing and summarizing population analyses results, detecting outliers, computing numerical quality criteria and comparing multiple run results.
-
-It is compatible with run executed with NONMEM 7.2 and higher.
+It provides helper functions for visualizing and summarizing population analyses results, detecting outliers, computing numerical quality criteria and comparing multiple run results.
 
 ## Requirements
 
-To take full advantage of `pmxploit` capacities, users should mind applying some "conventions" in writing NONMEM control stream files (see [article](articles/nonmem_requirements.html)).
+**pmxploit** can read runs executed with NONMEM 7.2 and higher (with results data contained in an xml file).
+
+## Installation
+
+``` r
+# Install the latest version from GitHub
+# install.packages('devtools')
+devtools::install_github('pnolain/pmxploit')
+```
+
+## Getting started
+
+```{r, eval = FALSE}
+library(pmxploit)
+
+# load a NONMEM run from its location
+run <- load_nm_run("~/pmxploit/example")
+
+# or from an archive file
+# run <- load_nm_run("~/pmxploit/example.tar.gz")
+```
+
+### Diagnostic plots
+
+```{r dv_vs_pred}
+plot_dv_vs_predictions(run, compartment = 2L, predictions = c("PRED", "IPRED"),
+                       x_scale = "log", y_scale = "log")
+```
+
+```{r residuals}
+plot_residuals(run, compartment = 2L, residuals = "CWRES", idv = c("TIME", "PRED"))
+```
+
+```{r residuals2}
+run %>%
+  group_by(CMT) %>%
+  plot_residuals(compartment = c(2L, 3L), residuals = "CWRES", idv = c("TIME", "PRED"))
+```
+
+### Parameters
+
+```{r convergence, warning = FALSE}
+plot_convergence(run, parameters = "theta")
+```
+
+
+```{r}
+run %>% 
+  summarize_thetas()
+```
+
+```{r}
+run %>% 
+  summarize_omega()
+```
+
+```{r}
+run %>% 
+  summarize_shrinkage(type = "ETA")
+```
+
