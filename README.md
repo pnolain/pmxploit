@@ -3,6 +3,8 @@
 pmxploit <img id="logo" src="pkgdown/pmxploit.svg" alt="pmxploit" width="125px" align="right" />
 ================================================================================================
 
+[![CRAN status](https://www.r-pkg.org/badges/version/pmxploit)](https://cran.r-project.org/package=pmxploit)
+
 The goal of **pmxploit** is to facilitate the post-processing analysis of non-linear mixed effects models developed with NONMEM software.
 
 It provides helper functions for visualizing and summarizing population analyses results, detecting outliers, computing numerical quality criteria and comparing multiple run results.
