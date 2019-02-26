@@ -30,7 +30,6 @@ vignettes/*.pdf
 inst/doc
 
 # custom
-# Processed documentation
 misc/
 # all *.tar.gz
 *.tar.gz
