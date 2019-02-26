@@ -30,8 +30,6 @@ vignettes/*.pdf
 inst/doc
 
 # custom
-# pkgdown website
-docs/
 # Processed documentation
 misc/
 # all *.tar.gz

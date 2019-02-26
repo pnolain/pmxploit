@@ -10,7 +10,7 @@ knitr::opts_chunk$set(collapse = TRUE,
                       comment = "#>",
                       fig.path   = 'man/figures/',
                       fig.align  = 'center',
-                      out.width  = '50%', 
+                      out.width  = '80%', 
                       dev        = 'png',
                       dev.args   = list(type = 'cairo'))
 
@@ -23,7 +23,7 @@ run <- pmxploit::EXAMPLERUN
 
 # pmxploit <img id="logo" src="pkgdown/pmxploit.svg" alt="pmxploit" width="125px" align="right" />
 
-The goal of **pmxploit** is to facilitate the post-processing analysis of non-linear mixed effects models developed with NONMEM.
+The goal of **pmxploit** is to facilitate the post-processing analysis of non-linear mixed effects models developed with NONMEM software.
 
 It provides helper functions for visualizing and summarizing population analyses results, detecting outliers, computing numerical quality criteria and comparing multiple run results.
 
@@ -62,7 +62,7 @@ plot_dv_vs_predictions(run, compartment = 2L, predictions = c("PRED", "IPRED"),
 plot_residuals(run, compartment = 2L, residuals = "CWRES", idv = c("TIME", "PRED"))
 ```
 
-```{r residuals2}
+```{r residuals2, fig.height=7}
 run %>%
   group_by(CMT) %>%
   plot_residuals(compartment = c(2L, 3L), residuals = "CWRES", idv = c("TIME", "PRED"))
@@ -70,7 +70,7 @@ run %>%
 
 ### Parameters
 
-```{r convergence, warning = FALSE}
+```{r convergence, message=FALSE}
 plot_convergence(run, parameters = "theta")
 ```
 

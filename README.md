@@ -41,13 +41,13 @@ plot_dv_vs_predictions(run, compartment = 2L, predictions = c("PRED", "IPRED"),
                        x_scale = "log", y_scale = "log")
 ```
 
-<img src="man/figures/dv_vs_pred-1.png" width="50%" style="display: block; margin: auto;" />
+<img src="man/figures/dv_vs_pred-1.png" width="80%" style="display: block; margin: auto;" />
 
 ``` r
 plot_residuals(run, compartment = 2L, residuals = "CWRES", idv = c("TIME", "PRED"))
 ```
 
-<img src="man/figures/residuals-1.png" width="50%" style="display: block; margin: auto;" />
+<img src="man/figures/residuals-1.png" width="80%" style="display: block; margin: auto;" />
 
 ``` r
 run %>%
@@ -55,16 +55,15 @@ run %>%
   plot_residuals(compartment = c(2L, 3L), residuals = "CWRES", idv = c("TIME", "PRED"))
 ```
 
-<img src="man/figures/residuals2-1.png" width="50%" style="display: block; margin: auto;" />
+<img src="man/figures/residuals2-1.png" width="80%" style="display: block; margin: auto;" />
 
 ### Parameters
 
 ``` r
 plot_convergence(run, parameters = "theta")
-#> Not shown fixed parameter(s): TKON, TVV2
 ```
 
-<img src="man/figures/convergence-1.png" width="50%" style="display: block; margin: auto;" />
+<img src="man/figures/convergence-1.png" width="80%" style="display: block; margin: auto;" />
 
 ``` r
 run %>% 
