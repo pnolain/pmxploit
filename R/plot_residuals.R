@@ -209,7 +209,7 @@ plot_residuals <- function(run,
 
     g_df <- g_df %>%
       select(-idv, -idv_Value) %>%
-      slice(1:(n() / length(idv)))
+      slice(1:(dplyr::n() / length(idv)))
 
     if (!is.null(split_by)) {
       grps <- map(c("Residuals", names(split_by)), as.name)
@@ -238,7 +238,7 @@ plot_residuals <- function(run,
         )
       ),
       slope = (q25 - q75) / (theo25 - theo75),
-      int = q25 - slope * theo25, n = n()
+      int = q25 - slope * theo25, n = dplyr::n()
     )
 
     if (!is.null(split_by)) {
@@ -257,7 +257,7 @@ plot_residuals <- function(run,
   } else if (type == "histogram") {
     g_df <- g_df %>%
       select(-idv, -idv_Value) %>%
-      slice(1:(n() / length(idv)))
+      slice(1:(dplyr::n() / length(idv)))
 
     if (!is.null(split_by)) {
       grps <- map(c("Residuals", names(split_by)), as.name)

@@ -192,7 +192,7 @@ plot_covariates_correlations <-
         rename(correlation = value) %>%
         filter(!is.na(correlation)) %>%
         group_by(covariate2) %>%
-        mutate(N = n()) %>%
+        mutate(N = dplyr::n()) %>%
         arrange(desc(N)) %>%
         select(-N)
 

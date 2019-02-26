@@ -36,7 +36,7 @@ load_nm_run_directory <-
       run_results_files <- run_files_df %>%
         group_by(name_sans_ext) %>%
         mutate(
-          N = n(),
+          N = dplyr::n(),
           has_xml = any(ext == "xml")
         ) %>%
         ungroup() %>%
@@ -550,7 +550,6 @@ load_nm_run_directory <-
           diag(temp_correlation_matrix) <- NA
 
           estimation$correlation <- any(!is.na(temp_correlation_matrix) & temp_correlation_matrix >= 0.96)
-          # estimation$max_correlation <- max(temp_correlation_matrix, na.rm = TRUE)
         }
 
         estimation$correlation_matrix <- correlation_matrix
@@ -648,7 +647,7 @@ load_nm_run_directory <-
     temp_p_df <- params_df %>% # look for duplicated names (e.g. IOV ETAs)
       group_by(name) %>%
       mutate(temp_name = pmap_chr(
-        list(n(), row_number(), name),
+        list(dplyr::n(), row_number(), name),
         ~ifelse(..1 > 1, str_c(name, "_", ..2), ..3)
       )) %>%
       ungroup()
@@ -784,7 +783,7 @@ load_nm_run_directory <-
     if (cs_data$ignore$`@`) {
       # id_lines_to_remove <- which(!str_detect(substr(data_lines, 1, 1), "[0-9\\.]"))
       # id_lines_to_remove <- str_which(data_lines, "^[a-zA-Z]")
-      id_lines_to_remove <- str_which(data_lines, "^[^0-9\\.]")
+      id_lines_to_remove <- str_which(data_lines, "^[^0-9]")
 
       lines_to_ignore <- c(lines_to_ignore, id_lines_to_remove)
     }
@@ -1252,7 +1251,7 @@ load_nm_run_directory <-
       arrange(type, name)
 
 
-    independent_variables <- tibble(column = character(), name = character(), unit = character())
+    time_regressors <- tibble(column = character(), name = character(), unit = character())
     prediction_types <- NULL
     residual_types <- NULL
 
@@ -1260,7 +1259,7 @@ load_nm_run_directory <-
       pmxploitab_cols <- colnames(pmxploitab)
 
       if (any(c("TIME", "TAD") %in% pmxploitab_cols)) {
-        independent_variables <- independent_variables %>%
+        time_regressors <- time_regressors %>%
           add_row(
             column = intersect(c("TIME", "TAD"), pmxploitab_cols),
             name = column,
@@ -1326,7 +1325,7 @@ load_nm_run_directory <-
       compartments = compartments,
       parameters = params_df,
       covariates = covariates_df,
-      independent_variables = independent_variables,
+      regressors = time_regressors,
       predictions = prediction_types,
       residuals = residual_types
     )
@@ -1558,7 +1557,7 @@ load_nm_run <-
             mutate(dir = dirname(filename)) %>%
             filter(dir == ".") %>%
             group_by(file_sans_ext) %>%
-            mutate(group_len = n()) %>%
+            mutate(group_len = dplyr::n()) %>%
             filter(group_len == max(group_len)) %>%
             ungroup() %>%
             arrange(ext) %>%

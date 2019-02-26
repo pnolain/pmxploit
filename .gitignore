@@ -33,7 +33,6 @@ inst/doc
 # pkgdown website
 docs/
 # Processed documentation
-man/
 misc/
 # all *.tar.gz
 *.tar.gz

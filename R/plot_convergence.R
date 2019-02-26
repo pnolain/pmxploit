@@ -92,7 +92,7 @@ plot_convergence <-
 
       # duplicate last row if it is not the last selected estimation
       if (i < max(estimation_ids)) {
-        last_row <- it_df %>% slice(n())
+        last_row <- it_df %>% slice(dplyr::n())
         last_row$is_last <- TRUE
 
         it_df <- it_df %>% bind_rows(last_row)

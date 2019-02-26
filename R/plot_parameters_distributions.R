@@ -159,7 +159,7 @@ plot_parameters_distributions <- function(run, parameters = NULL,
         )
       ),
       slope = (q25 - q75) / (theo25 - theo75),
-      int = q25 - slope * theo25, n = n()
+      int = q25 - slope * theo25, n = dplyr::n()
     ) # %>%
 
 
