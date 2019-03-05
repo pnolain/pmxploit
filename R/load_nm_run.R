@@ -29,8 +29,12 @@ load_nm_run_directory <-
         file = run_files,
         name = basename(file),
         name_sans_ext = tools::file_path_sans_ext(name),
-        ext = tools::file_ext(name)
-      )
+        ext = tools::file_ext(name),
+        datetime = file.info(run_files)$mtime
+      ) %>%
+        arrange(desc(datetime)) %>%
+        group_by(ext) %>%
+        slice(1)
 
 
       run_results_files <- run_files_df %>%
@@ -43,11 +47,6 @@ load_nm_run_directory <-
         filter( # N == max(N)
           has_xml
         )
-
-      files_extensions <- run_results_files$ext %>% unique()
-
-      # if(!(any(c("ctl", "con", "mod", "nmctl") %in% files_extensions) && "xml" %in% files_extensions))
-      #   stop(simpleError("NONMEM run not recognised."))
 
       control_stream_file <- run_results_files %>% filter(ext %in% c("con", "mod", "ctl", "nmctl")) %>% pull(file)
 
