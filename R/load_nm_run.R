@@ -25,42 +25,25 @@ load_nm_run_directory <-
         normalizePath() %>%
         unique() # needed because of symbolik links
 
-      run_files_df <- tibble(
-        file = run_files,
-        name = basename(file),
-        name_sans_ext = tools::file_path_sans_ext(name),
-        ext = tools::file_ext(name),
-        datetime = file.info(run_files)$mtime
-      ) %>%
+      run_files_df <- tibble(file = run_files,
+                             name = basename(file),
+                             name_sans_ext = tools::file_path_sans_ext(name),
+                             ext = tools::file_ext(name),
+                             datetime = file.info(run_files)$mtime)
+
+      run_xml_file <- run_files_df %>%
+        filter(tolower(ext) == "xml") %>%
         arrange(desc(datetime)) %>%
-        group_by(ext) %>%
         slice(1)
 
-
       run_results_files <- run_files_df %>%
-        group_by(name_sans_ext) %>%
-        mutate(
-          N = dplyr::n(),
-          has_xml = any(ext == "xml")
-        ) %>%
-        ungroup() %>%
-        filter( # N == max(N)
-          has_xml
-        )
+        filter(name_sans_ext == run_xml_file$name_sans_ext)
 
       control_stream_file <- run_results_files %>% filter(ext %in% c("con", "mod", "ctl", "nmctl")) %>% pull(file)
-
-      control_stream_file <- ifelse(length(control_stream_file) == 0, "", control_stream_file)
-
       estimation_file <- run_results_files %>% filter(ext == "ext") %>% pull(file)
       phi_file <- run_results_files %>% filter(ext == "phi") %>% pull(file)
       xml_file <- run_results_files %>% filter(ext == "xml") %>% pull(file)
-
       report_file <- run_results_files %>% filter(ext %in% c("rep", "lst", "out", "res")) %>% pull(file) %>% first()
-
-      if(length(xml_file) > 1){ # look for the correct xml file (not temporaryfile.xml)
-        xml_file <- str_subset(xml_file, fixed(str_c(tools::file_path_sans_ext(control_stream_file), ".xml")))
-      }
 
       # run files
       run_name <- tools::file_path_sans_ext(basename(xml_file))
