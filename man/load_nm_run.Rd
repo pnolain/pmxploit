@@ -4,7 +4,7 @@
 \alias{load_nm_run}
 \title{Load a NONMEM run data}
 \usage{
-load_nm_run(path, temp_directory = str_c(tempdir(), "pmxploit"),
+load_nm_run(path, temp_directory = str_c(tempdir(), "/pmxploit"),
   load_tables = TRUE, read_initial_values = TRUE,
   keep_tempfiles = FALSE, extract_everything = FALSE,
   dataset_separator = NA, dataset_na_string = ".",
@@ -13,7 +13,7 @@ load_nm_run(path, temp_directory = str_c(tempdir(), "pmxploit"),
 \arguments{
 \item{path}{character. Run folder or archive file path.}
 
-\item{temp_directory}{(optional) character. When \code{path} is a *.tar.gz archive file,
+\item{temp_directory}{(optional) character. When \code{path} is an archive file,
 sets the path of the temporary directory where the archive files will be extracted.}
 
 \item{load_tables}{logical. If \code{TRUE} (default), loads output tables.}
@@ -24,7 +24,7 @@ parameter values from the control stream.}
 \item{keep_tempfiles}{logical. If \code{TRUE}, \code{temp_directory} will not be deleted
 once run data is loaded.}
 
-\item{extract_everything}{logical. If \code{TRUE}, when \code{path} is a *.tar.gz archive file,
+\item{extract_everything}{logical. If \code{TRUE}, when \code{path} is an archive file,
 extracts all the content of the archive. Otherwise, extracts only the files required for
 post-processing analysis (default).}
 
@@ -43,7 +43,7 @@ Useful to follow loading progression.}
 A NONMEM run object. See \code{\link{load_nm_run_directory}}.
 }
 \description{
-Loads NONMEM run results data from either a folder or a *.tar.gz archive file.
+Loads NONMEM run results data from either a folder or a archive file (tar.gz or zip).
 }
 \examples{
 \dontrun{

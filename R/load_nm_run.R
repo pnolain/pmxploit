@@ -1420,17 +1420,17 @@ load_nm_run_directory <-
 
 #' Load a NONMEM run data
 #'
-#' Loads NONMEM run results data from either a folder or a *.tar.gz archive file.
+#' Loads NONMEM run results data from either a folder or a archive file (tar.gz or zip).
 #'
 #' @param path character. Run folder or archive file path.
-#' @param temp_directory (optional) character. When \code{path} is a *.tar.gz archive file,
+#' @param temp_directory (optional) character. When \code{path} is an archive file,
 #' sets the path of the temporary directory where the archive files will be extracted.
 #' @param load_tables logical. If \code{TRUE} (default), loads output tables.
 #' @param read_initial_values logical. If \code{TRUE} (default), parses initial
 #'  parameter values from the control stream.
 #' @param keep_tempfiles logical. If \code{TRUE}, \code{temp_directory} will not be deleted
 #' once run data is loaded.
-#' @param extract_everything logical. If \code{TRUE}, when \code{path} is a *.tar.gz archive file,
+#' @param extract_everything logical. If \code{TRUE}, when \code{path} is an archive file,
 #' extracts all the content of the archive. Otherwise, extracts only the files required for
 #' post-processing analysis (default).
 #' @param dataset_separator (optional) character. Character used as column
@@ -1454,7 +1454,7 @@ load_nm_run_directory <-
 #' }
 load_nm_run <-
   function(path,
-             temp_directory = str_c(tempdir(), "pmxploit"),
+             temp_directory = str_c(tempdir(), "/pmxploit"),
              load_tables = TRUE,
              read_initial_values = TRUE,
              keep_tempfiles = FALSE,
@@ -1484,9 +1484,11 @@ load_nm_run <-
 
       run_archive <- normalizePath(run_archive)
 
-      if (!(str_detect(tolower(run_archive), "\\.tar\\.gz$"))) {
-        stop(simpleError("Run archive file has to be a *.tar.gz file."))
+      if (!(str_detect(tolower(run_archive), "(\\.tar\\.gz|\\.zip)$"))) {
+        stop(simpleError("Run archive file has to be a *.tar.gz or *.zip file."))
       }
+
+      is_zip <- (tolower(tools::file_ext(run_archive)) == "zip")
 
       is_windows <- (tolower(Sys.info()["sysname"]) == "windows")
 
@@ -1496,14 +1498,16 @@ load_nm_run <-
         update_progress(value = 0.10, detail = "Extracting files...")
       }
 
-      quiet_untar <- function(...) {
-        q_untar <- quietly(untar)
+      uncompress_f <- (if(is_zip) unzip else  untar)
 
-        q_untar(...)$result
+      quiet_uncompress <- function(...) {
+        q_uncompress <- quietly(uncompress_f)
+
+        q_uncompress(...)$result
       }
 
-      # skip TAR messages on Windows (many warnings), and if verbose = FALSE
-      untar_function <- ifelse(is_windows || !verbose, quiet_untar, untar)
+      # skip TAR messages on Windows (many warnings)
+      uncompress_function <- (if(is_windows) quiet_uncompress else uncompress_f)
 
       # Create tempdir
       repeat {
@@ -1518,7 +1522,9 @@ load_nm_run <-
         }
 
         if (!dir.exists(run_directory)) {
-          archive_files <- untar_function(tarfile = run_archive, list = TRUE, verbose = verbose)
+          archive_files <- uncompress_function(run_archive, list = TRUE)
+
+          if(is_zip) archive_files <- archive_files$Name
 
           files_extensions <- tools::file_ext(archive_files) %>% unique()
 
@@ -1545,17 +1551,10 @@ load_nm_run <-
             arrange(ext) %>%
             slice(1)
 
-          untar_function(
-            tarfile = run_archive, files = cs_file$filename,
-            exdir = run_directory, verbose = verbose
+          uncompress_function(
+            run_archive, files = cs_file$filename,
+            exdir = run_directory
           )
-
-          # cs_file_path <- cs_file %>%
-          #   # safe check if it is a symbolik link
-          #   filter(file.exists(str_c(run_directory, filename, sep = "/"))) %>%
-          #   arrange(ext) %>% #
-          #   slice(1) %>%
-          #   pull(filename)
 
           cs_file_path <- cs_file$filename
 
@@ -1581,7 +1580,7 @@ load_nm_run <-
           }
 
           if (extract_everything) {
-            untar_function(tarfile = run_archive, exdir = run_directory, verbose = verbose)
+            uncompress_function(run_archive, exdir = run_directory)
           } else {
             run_name <- tools::file_path_sans_ext(basename(cs_file_path))
 
@@ -1630,9 +1629,9 @@ load_nm_run <-
               files_list <- c(mdata_file, files_list)
             }
 
-            untar_function(
-              tarfile = run_archive, files = files_list,
-              exdir = run_directory, verbose = verbose
+            uncompress_function(
+              run_archive, files = files_list,
+              exdir = run_directory
             )
           }
           break
