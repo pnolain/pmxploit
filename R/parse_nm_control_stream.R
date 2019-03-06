@@ -335,10 +335,11 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     if (verbose) print("Parsing $SUBROUTINE...")
 
     sub_text <- lines[records$SUBROUTINE$start:records$SUBROUTINE$end]
-    advan_match <- str_match(sub_text, "ADVAN[0-9]+")
+    advan_match <- str_match(sub_text, "ADVAN=?[0-9]+")
     advan <- ifelse(length(advan_match), as.character(advan_match), NA)
 
     if (!is.na(advan)) {
+      advan <- str_remove(advan, "=")
       if (advan %in% c("ADVAN1", "ADVAN10")) {
         compartments <- tibble(cmt = 1, name = "Central", dv_target = TRUE)
       } else if (advan == "ADVAN2") {
