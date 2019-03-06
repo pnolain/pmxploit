@@ -36,21 +36,21 @@ load_nm_run_directory <-
         arrange(desc(datetime)) %>%
         slice(1)
 
-      run_results_files <- run_files_df %>%
-        filter(name_sans_ext == run_xml_file$name_sans_ext)
-
-      control_stream_file <- run_results_files %>% filter(ext %in% c("con", "mod", "ctl", "nmctl")) %>% pull(file)
-      estimation_file <- run_results_files %>% filter(ext == "ext") %>% pull(file)
-      phi_file <- run_results_files %>% filter(ext == "phi") %>% pull(file)
-      xml_file <- run_results_files %>% filter(ext == "xml") %>% pull(file)
-      report_file <- run_results_files %>% filter(ext %in% c("rep", "lst", "out", "res")) %>% pull(file) %>% first()
-
-      # run files
-      run_name <- tools::file_path_sans_ext(basename(xml_file))
-
-      xml_file_found <- length(xml_file) == 1
+      xml_file_found <- (nrow(run_xml_file) == 1)
 
       if (xml_file_found) {
+
+        run_results_files <- run_files_df %>%
+          filter(name_sans_ext == run_xml_file$name_sans_ext)
+
+        control_stream_file <- run_results_files %>% filter(ext %in% c("con", "mod", "ctl", "nmctl")) %>% pull(file)
+        estimation_file <- run_results_files %>% filter(ext == "ext") %>% pull(file)
+        phi_file <- run_results_files %>% filter(ext == "phi") %>% pull(file)
+        xml_file <- run_results_files %>% filter(ext == "xml") %>% pull(file)
+        report_file <- run_results_files %>% filter(ext %in% c("rep", "lst", "out", "res")) %>% pull(file) %>% first()
+
+        run_name <- run_xml_file$name_sans_ext
+
         break
       }
 
@@ -1233,7 +1233,7 @@ load_nm_run_directory <-
       arrange(type, name)
 
 
-    time_regressors <- tibble(column = character(), name = character(), unit = character())
+    independent_variables <- tibble(column = character(), name = character(), unit = character())
     prediction_types <- NULL
     residual_types <- NULL
 
@@ -1241,7 +1241,7 @@ load_nm_run_directory <-
       pmxploitab_cols <- colnames(pmxploitab)
 
       if (any(c("TIME", "TAD") %in% pmxploitab_cols)) {
-        time_regressors <- time_regressors %>%
+        independent_variables <- independent_variables %>%
           add_row(
             column = intersect(c("TIME", "TAD"), pmxploitab_cols),
             name = column,
@@ -1307,7 +1307,7 @@ load_nm_run_directory <-
       compartments = compartments,
       parameters = params_df,
       covariates = covariates_df,
-      regressors = time_regressors,
+      independent_variables = independent_variables,
       predictions = prediction_types,
       residuals = residual_types
     )
