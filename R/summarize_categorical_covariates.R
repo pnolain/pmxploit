@@ -133,8 +133,11 @@ summarize_categorical_covariates <- function(run,
     )
   }
 
-  summed_df <- summed_df %>% mutate(value = map2_chr(covariate, value, function(cov, val) {
+  summed_df <- summed_df %>%
+    mutate(value = map2_chr(covariate, value, function(cov, val) {
     lvls <- run$model$categorical_covariates_levels[[as.character(cov)]]
+    if(!(as.character(val) %in% lvls))
+      return("NA")
     names(lvls[lvls == as.character(val)])
   }))
 
