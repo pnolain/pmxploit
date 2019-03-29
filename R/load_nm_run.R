@@ -77,31 +77,37 @@ load_nm_run_directory <-
     xml_lines <- read_lines(xml_file) %>% na.omit() %>% str_replace_all("\\&", "and") %>% str_trim()
 
     # XML file parsing
-    safe_xml_parsing <- safely(xmlParse)
+    # safe_xml_parsing <- safely(xmlParse)
+    quiet_parse <- quietly(xmlParse)
 
-    load_xml <- safe_xml_parsing(xml_lines,
-      encoding = "UTF-8",
-      options = 1
+    # load_xml <- safe_xml_parsing(xml_lines,
+    #   encoding = "UTF-8",
+    #   options = 1
+    # ) # recover on error
+
+    load_xml_q <- quiet_parse(xml_lines,
+                                 encoding = "UTF-8",
+                                 options = 1
     ) # recover on error
 
-    if (!is.null(load_xml$error)) {
+    if (!is.null(load_xml_q$output) && load_xml_q$output != "") {
 
       # bug in NONMEM 7.4.1: monitor tag mismatch
-      err_msg <- load_xml$error$message
+      err_msg <- load_xml_q$output
       err_pattern <- "Opening and ending tag mismatch: monitor line (\\d+)"
       if (str_detect(err_msg, err_pattern)) {
         err_line <- str_match_all(err_msg, err_pattern)[[1]][, 2] %>% as.integer()
 
         # 2nd try
-        load_xml <- safe_xml_parsing(xml_lines[-err_line], encoding = "UTF-8")
+        load_xml_q <- quiet_parse(xml_lines[-err_line], encoding = "UTF-8")
       }
 
-      if (!is.null(load_xml$error)) {
-        stop(load_xml$error)
+      if (!is.null(load_xml_q$error)) {
+        stop(load_xml_q$error)
       }
     }
 
-    xml_report <- load_xml$result
+    xml_report <- load_xml_q$result
 
     root_node <- xmlRoot(xml_report)
     nonmem_node <- root_node[["nonmem"]]
