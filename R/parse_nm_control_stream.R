@@ -263,18 +263,18 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     # fortran_ops <- c("==" = "EQ", ">=" = "GE", ">" = "GT", "<=" = "LE", "<" = "LT", "!=" = "NE")
     fortran_ops <- tribble(
       ~fortran, ~r,
-      "EQ", "==",
+      ".EQ.", "==",
       "==", "==",
       "=", "==",
-      "GE", ">=",
+      ".GE.", ">=",
       ">=", ">=",
-      "GT", ">",
+      ".GT.", ">",
       ">", ">",
-      "LE", "<=",
+      ".LE.", "<=",
       "<=", "<=",
-      "LT", "<",
+      ".LT.", "<",
       "<", "<",
-      "NE", "!=",
+      ".NE.", "!=",
       "/=", "!="
     )
 
@@ -305,7 +305,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
     # separated IGNORE statements
     ignore_pattern2 <- sprintf(
-      "IGNORE\\s*=?\\s*\\((%s)\\s*\\.(%s)\\.\\s*([0-9\\.\\-]+)\\)",
+      "IGNORE\\s*=?\\s*\\((%s)\\s*(%s)\\s*([0-9\\.\\-]+)\\)",
       str_c(input_cols, collapse = "|"),
       str_c(fortran_ops$fortran, collapse = "|")
     )
