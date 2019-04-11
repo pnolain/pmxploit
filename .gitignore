@@ -30,10 +30,9 @@ vignettes/*.pdf
 inst/doc
 
 # custom
-# pkgdown website
-docs/
-# Processed documentation
-man/
 misc/
 # all *.tar.gz
 *.tar.gz
+
+tests/testthat/test-hidden.R
+tests/testthat/hidden

@@ -25,46 +25,32 @@ load_nm_run_directory <-
         normalizePath() %>%
         unique() # needed because of symbolik links
 
-      run_files_df <- tibble(
-        file = run_files,
-        name = basename(file),
-        name_sans_ext = tools::file_path_sans_ext(name),
-        ext = tools::file_ext(name)
-      )
+      run_files_df <- tibble(file = run_files,
+                             name = basename(file),
+                             name_sans_ext = tools::file_path_sans_ext(name),
+                             ext = tools::file_ext(name),
+                             datetime = file.info(run_files)$mtime)
 
+      run_xml_file <- run_files_df %>%
+        filter(tolower(ext) == "xml") %>%
+        arrange(desc(datetime)) %>%
+        slice(1)
 
-      run_results_files <- run_files_df %>%
-        group_by(name_sans_ext) %>%
-        mutate(
-          N = n(),
-          has_xml = any(ext == "xml")
-        ) %>%
-        ungroup() %>%
-        filter( # N == max(N)
-          has_xml
-        )
-
-      files_extensions <- run_results_files$ext %>% unique()
-
-      # if(!(any(c("ctl", "con", "mod", "nmctl") %in% files_extensions) && "xml" %in% files_extensions))
-      #   stop(simpleError("NONMEM run not recognised."))
-
-      control_stream_file <- run_results_files %>% filter(ext %in% c("con", "mod", "ctl", "nmctl")) %>% pull(file)
-
-      control_stream_file <- ifelse(length(control_stream_file) == 0, "", control_stream_file)
-
-      estimation_file <- run_results_files %>% filter(ext == "ext") %>% pull(file)
-      phi_file <- run_results_files %>% filter(ext == "phi") %>% pull(file)
-      xml_file <- run_results_files %>% filter(ext == "xml") %>% pull(file)
-
-      report_file <- run_results_files %>% filter(ext %in% c("rep", "lst", "out", "res")) %>% pull(file) %>% first()
-
-      # run files
-      run_name <- tools::file_path_sans_ext(basename(xml_file))
-
-      xml_file_found <- length(xml_file) == 1
+      xml_file_found <- (nrow(run_xml_file) == 1)
 
       if (xml_file_found) {
+
+        run_results_files <- run_files_df %>%
+          filter(name_sans_ext == run_xml_file$name_sans_ext)
+
+        control_stream_file <- run_results_files %>% filter(ext %in% c("con", "mod", "ctl", "nmctl")) %>% pull(file)
+        estimation_file <- run_results_files %>% filter(ext == "ext") %>% pull(file)
+        phi_file <- run_results_files %>% filter(ext == "phi") %>% pull(file)
+        xml_file <- run_results_files %>% filter(ext == "xml") %>% pull(file)
+        report_file <- run_results_files %>% filter(ext %in% c("rep", "lst", "out", "res")) %>% pull(file) %>% first()
+
+        run_name <- run_xml_file$name_sans_ext
+
         break
       }
 
@@ -91,37 +77,43 @@ load_nm_run_directory <-
     xml_lines <- read_lines(xml_file) %>% na.omit() %>% str_replace_all("\\&", "and") %>% str_trim()
 
     # XML file parsing
-    safe_xml_parsing <- safely(xmlParse)
+    # safe_xml_parsing <- safely(xmlParse)
+    quiet_parse <- quietly(xmlParse)
 
-    load_xml <- safe_xml_parsing(xml_lines,
-      encoding = "UTF-8",
-      options = 1
+    # load_xml <- safe_xml_parsing(xml_lines,
+    #   encoding = "UTF-8",
+    #   options = 1
+    # ) # recover on error
+
+    load_xml_q <- quiet_parse(xml_lines,
+                                 encoding = "UTF-8",
+                                 options = 1
     ) # recover on error
 
-    if (!is.null(load_xml$error)) {
+    if (!is.null(load_xml_q$output) && load_xml_q$output != "") {
 
       # bug in NONMEM 7.4.1: monitor tag mismatch
-      err_msg <- load_xml$error$message
+      err_msg <- load_xml_q$output
       err_pattern <- "Opening and ending tag mismatch: monitor line (\\d+)"
       if (str_detect(err_msg, err_pattern)) {
         err_line <- str_match_all(err_msg, err_pattern)[[1]][, 2] %>% as.integer()
 
         # 2nd try
-        load_xml <- safe_xml_parsing(xml_lines[-err_line], encoding = "UTF-8")
+        load_xml_q <- quiet_parse(xml_lines[-err_line], encoding = "UTF-8")
       }
 
-      if (!is.null(load_xml$error)) {
-        stop(load_xml$error)
+      if (!is.null(load_xml_q$error)) {
+        stop(load_xml_q$error)
       }
     }
 
-    xml_report <- load_xml$result
+    xml_report <- load_xml_q$result
 
     root_node <- xmlRoot(xml_report)
     nonmem_node <- root_node[["nonmem"]]
 
     if (is.null(nonmem_node)) {
-      stop(simpleError("NONMEM run not recognised."))
+      stop(simpleError("NONMEM run not recognized: XML result file is invalid."))
     }
 
     problem_node <- nonmem_node[["problem"]]
@@ -283,7 +275,7 @@ load_nm_run_directory <-
           }
 
           # make a data frame...
-          thetas_df <- data_frame(
+          thetas_df <- tibble(
             id = thetas_ids,
             estimate = thetas_values,
             se = thetas_se,
@@ -326,7 +318,7 @@ load_nm_run_directory <-
 
           etas_id_col <- rep(etas_names, cs_data$subpopulations)
 
-          eta_bars_df <- data_frame(
+          eta_bars_df <- tibble(
             id = etas_id_col,
             value = eta_bar[, 1],
             se = eta_bar_se[, 1]
@@ -415,14 +407,14 @@ load_nm_run_directory <-
           ebv_shrinkage_matrix <- load_matrix(est_node[[ebv_shrink_tag]])
 
           if (!is.null(eta_shrinkage_matrix)) {
-            eta_shrinkage <- data_frame(parameter = etas_id_col, shrinkage = eta_shrinkage_matrix[, 1] / 100)
+            eta_shrinkage <- tibble(parameter = etas_id_col, shrinkage = eta_shrinkage_matrix[, 1] / 100)
 
             if (cs_data$subpopulations > 1) {
               eta_shrinkage$subpop <- rep(subpop_names, each = length(etas_names))
             }
           }
           if (!is.null(ebv_shrinkage_matrix)) {
-            ebv_shrinkage <- data_frame(parameter = etas_id_col, shrinkage = ebv_shrinkage_matrix[, 1] / 100)
+            ebv_shrinkage <- tibble(parameter = etas_id_col, shrinkage = ebv_shrinkage_matrix[, 1] / 100)
 
             if (cs_data$subpopulations > 1) {
               ebv_shrinkage$subpop <- rep(subpop_names, each = length(etas_names))
@@ -478,7 +470,7 @@ load_nm_run_directory <-
           eps_id_col <- rep(names(eps_ids), cs_data$subpopulations)
 
           if (!is.null(eps_shrinkage_matrix)) {
-            epsilon_shrinkage <- data_frame(
+            epsilon_shrinkage <- tibble(
               parameter = eps_id_col,
               shrinkage = eps_shrinkage_matrix[, 1] / 100
             )
@@ -613,7 +605,7 @@ load_nm_run_directory <-
         omega_y_names <- plyr::mapvalues(omega_y, from = etas_df$n, to = etas_df$name)
         omega_ids <- sprintf("OMEGA(%s,%s)", omega_x, omega_y)
 
-        omega_params_df <- data_frame(
+        omega_params_df <- tibble(
           id = sprintf("OMEGA(%s,%s)", omega_x, omega_y),
           type = "omega",
           name = sprintf("OMEGA(%s,%s)", omega_x_names, omega_y_names)
@@ -630,7 +622,7 @@ load_nm_run_directory <-
           sigma_y <- map(sigma_n, function(x) 1:(sigma_n)[x]) %>% unlist()
         }
 
-        sigma_params_df <- data_frame(
+        sigma_params_df <- tibble(
           id = sprintf("SIGMA(%s,%s)", sigma_x, sigma_y),
           type = "sigma",
           name = sprintf("SIGMA(EPS%s,EPS%s)", sigma_x, sigma_y)
@@ -643,7 +635,7 @@ load_nm_run_directory <-
     temp_p_df <- params_df %>% # look for duplicated names (e.g. IOV ETAs)
       group_by(name) %>%
       mutate(temp_name = pmap_chr(
-        list(n(), row_number(), name),
+        list(dplyr::n(), row_number(), name),
         ~ifelse(..1 > 1, str_c(name, "_", ..2), ..3)
       )) %>%
       ungroup()
@@ -778,7 +770,8 @@ load_nm_run_directory <-
 
     if (cs_data$ignore$`@`) {
       # id_lines_to_remove <- which(!str_detect(substr(data_lines, 1, 1), "[0-9\\.]"))
-      id_lines_to_remove <- str_which(data_lines, "^[a-zA-Z]")
+      # id_lines_to_remove <- str_which(data_lines, "^[a-zA-Z]")
+      id_lines_to_remove <- str_which(data_lines, "^[^0-9]")
 
       lines_to_ignore <- c(lines_to_ignore, id_lines_to_remove)
     }
@@ -1110,7 +1103,7 @@ load_nm_run_directory <-
     if (output_cmt %in% as.numeric(as.character(dv_cmts))) {
       compartments <- bind_rows(
         compartments,
-        data_frame(
+        tibble(
           cmt = output_cmt, name = "Output", dv_target = TRUE
         )
       )
@@ -1139,7 +1132,8 @@ load_nm_run_directory <-
           pmxploitab <- pmxploitab %>%
             bind_cols(select(tab, one_of(new_col_names)))
         } else {
-          warning(simpleWarning(sprintf("%s's number of rows is different than the dataset's.", names(run_tables)[i])))
+          if(length(estimations) > 0) # do not warn for simulations runs
+            warning(simpleWarning(sprintf("%s's number of rows is different than the dataset's.", names(run_tables)[i])))
         }
       }
     }
@@ -1162,7 +1156,7 @@ load_nm_run_directory <-
       ))
 
       if (length(par_names) > 0) {
-        individual_params_df <- data_frame(
+        individual_params_df <- tibble(
           id = par_names, type = "individual", name = par_names,
           column = par_names
         )
@@ -1204,7 +1198,7 @@ load_nm_run_directory <-
     params_df <- params_df %>%
       arrange(type, id)
 
-    covariates_df <- data_frame(
+    covariates_df <- tibble(
       column = character(),
       type = character(),
       name = character()
@@ -1217,7 +1211,7 @@ load_nm_run_directory <-
       cat_cov_names <- setdiff(all_cols, nm_reserved_names)
 
       if (length(cat_cov_names) > 0) {
-        cat_covs_df <- data_frame(column = cat_cov_names, type = "categorical", name = cat_cov_names)
+        cat_covs_df <- tibble(column = cat_cov_names, type = "categorical", name = cat_cov_names)
         covariates_df <- bind_rows(covariates_df, cat_covs_df)
       }
     }
@@ -1228,7 +1222,7 @@ load_nm_run_directory <-
       cont_cov_names <- setdiff(all_cols, nm_reserved_names)
 
       if (length(cont_cov_names) > 0) {
-        cont_covs_df <- data_frame(column = cont_cov_names, type = "continuous", name = cont_cov_names)
+        cont_covs_df <- tibble(column = cont_cov_names, type = "continuous", name = cont_cov_names)
         covariates_df <- bind_rows(covariates_df, cont_covs_df)
       }
     }
@@ -1245,7 +1239,7 @@ load_nm_run_directory <-
       arrange(type, name)
 
 
-    time_regressors <- tibble(column = character(), name = character(), unit = character())
+    independent_variables <- tibble(column = character(), name = character(), unit = character())
     prediction_types <- NULL
     residual_types <- NULL
 
@@ -1253,7 +1247,7 @@ load_nm_run_directory <-
       pmxploitab_cols <- colnames(pmxploitab)
 
       if (any(c("TIME", "TAD") %in% pmxploitab_cols)) {
-        time_regressors <- time_regressors %>%
+        independent_variables <- independent_variables %>%
           add_row(
             column = intersect(c("TIME", "TAD"), pmxploitab_cols),
             name = column,
@@ -1319,7 +1313,7 @@ load_nm_run_directory <-
       compartments = compartments,
       parameters = params_df,
       covariates = covariates_df,
-      regressors = time_regressors,
+      independent_variables = independent_variables,
       predictions = prediction_types,
       residuals = residual_types
     )
@@ -1432,17 +1426,17 @@ load_nm_run_directory <-
 
 #' Load a NONMEM run data
 #'
-#' Loads NONMEM run results data from either a folder or a *.tar.gz archive file.
+#' Loads NONMEM run results data from either a folder or a archive file (tar.gz or zip).
 #'
 #' @param path character. Run folder or archive file path.
-#' @param temp_directory (optional) character. When \code{path} is a *.tar.gz archive file,
+#' @param temp_directory (optional) character. When \code{path} is an archive file,
 #' sets the path of the temporary directory where the archive files will be extracted.
 #' @param load_tables logical. If \code{TRUE} (default), loads output tables.
 #' @param read_initial_values logical. If \code{TRUE} (default), parses initial
 #'  parameter values from the control stream.
 #' @param keep_tempfiles logical. If \code{TRUE}, \code{temp_directory} will not be deleted
 #' once run data is loaded.
-#' @param extract_everything logical. If \code{TRUE}, when \code{path} is a *.tar.gz archive file,
+#' @param extract_everything logical. If \code{TRUE}, when \code{path} is an archive file,
 #' extracts all the content of the archive. Otherwise, extracts only the files required for
 #' post-processing analysis (default).
 #' @param dataset_separator (optional) character. Character used as column
@@ -1466,7 +1460,7 @@ load_nm_run_directory <-
 #' }
 load_nm_run <-
   function(path,
-             temp_directory = str_c(tempdir(), "pmxploit"),
+             temp_directory = str_c(tempdir(), "/pmxploit"),
              load_tables = TRUE,
              read_initial_values = TRUE,
              keep_tempfiles = FALSE,
@@ -1496,9 +1490,11 @@ load_nm_run <-
 
       run_archive <- normalizePath(run_archive)
 
-      if (!(str_detect(tolower(run_archive), "\\.tar\\.gz$"))) {
-        stop(simpleError("Run archive file has to be a *.tar.gz file."))
+      if (!(str_detect(tolower(run_archive), "(\\.tar\\.gz|\\.zip)$"))) {
+        stop(simpleError("Run archive file has to be a *.tar.gz or *.zip file."))
       }
+
+      is_zip <- (tolower(tools::file_ext(run_archive)) == "zip")
 
       is_windows <- (tolower(Sys.info()["sysname"]) == "windows")
 
@@ -1508,14 +1504,16 @@ load_nm_run <-
         update_progress(value = 0.10, detail = "Extracting files...")
       }
 
-      quiet_untar <- function(...) {
-        q_untar <- quietly(untar)
+      uncompress_f <- (if(is_zip) unzip else  untar)
 
-        q_untar(...)$result
+      quiet_uncompress <- function(...) {
+        q_uncompress <- quietly(uncompress_f)
+
+        q_uncompress(...)$result
       }
 
-      # skip TAR messages on Windows (many warnings), and if verbose = FALSE
-      untar_function <- ifelse(is_windows || !verbose, quiet_untar, untar)
+      # skip TAR messages on Windows (many warnings)
+      uncompress_function <- (if(is_windows) quiet_uncompress else uncompress_f)
 
       # Create tempdir
       repeat {
@@ -1530,19 +1528,21 @@ load_nm_run <-
         }
 
         if (!dir.exists(run_directory)) {
-          archive_files <- untar_function(tarfile = run_archive, list = TRUE, verbose = verbose)
+          archive_files <- uncompress_function(run_archive, list = TRUE)
+
+          if(is_zip) archive_files <- archive_files$Name
 
           files_extensions <- tools::file_ext(archive_files) %>% unique()
 
           cs_exts <- c("ctl", "con", "mod", "nmctl")
 
           if (!(any(cs_exts %in% files_extensions) && "xml" %in% files_extensions)) {
-            stop(simpleError("NONMEM run not recognised."))
+            stop(simpleError("NONMEM run not recognized: no XML result file found."))
           }
 
           # dur <- system.time({
 
-          cs_file <- data_frame(filename = archive_files) %>%
+          cs_file <- tibble(filename = archive_files) %>%
             mutate(
               ext = ordered(tools::file_ext(filename), cs_exts),
               file_sans_ext = tools::file_path_sans_ext(basename(filename))
@@ -1551,23 +1551,16 @@ load_nm_run <-
             mutate(dir = dirname(filename)) %>%
             filter(dir == ".") %>%
             group_by(file_sans_ext) %>%
-            mutate(group_len = n()) %>%
+            mutate(group_len = dplyr::n()) %>%
             filter(group_len == max(group_len)) %>%
             ungroup() %>%
             arrange(ext) %>%
             slice(1)
 
-          untar_function(
-            tarfile = run_archive, files = cs_file$filename,
-            exdir = run_directory, verbose = verbose
+          uncompress_function(
+            run_archive, files = cs_file$filename,
+            exdir = run_directory
           )
-
-          # cs_file_path <- cs_file %>%
-          #   # safe check if it is a symbolik link
-          #   filter(file.exists(str_c(run_directory, filename, sep = "/"))) %>%
-          #   arrange(ext) %>% #
-          #   slice(1) %>%
-          #   pull(filename)
 
           cs_file_path <- cs_file$filename
 
@@ -1593,11 +1586,11 @@ load_nm_run <-
           }
 
           if (extract_everything) {
-            untar_function(tarfile = run_archive, exdir = run_directory, verbose = verbose)
+            uncompress_function(run_archive, exdir = run_directory)
           } else {
             run_name <- tools::file_path_sans_ext(basename(cs_file_path))
 
-            archive_files_df <- data_frame(file = archive_files) %>%
+            archive_files_df <- tibble(file = archive_files) %>%
               mutate(
                 file2 = ifelse(substring(file, 1, 2) == "./", substring(file, 3), file), # trick when tar.gz archives that contain subdirectories
                 dir_name = dirname(file),
@@ -1632,19 +1625,19 @@ load_nm_run <-
 
             files_list <- archive_files_df$file
 
-            extra_files <- c(cs_data$extra_files, cs_data$subroutine$FILES)
+            # extra_files <- c(cs_data$extra_files, cs_data$subroutine$FILES)
 
-            if (length(extra_files) > 0) {
-              files_list <- c(files_list, str_c("./", extra_files))
+            if (length(cs_data$extra_files) > 0) {
+              files_list <- c(files_list, str_c("./", cs_data$extra_files))
             }
 
             if (length(mdata_file <- str_subset(archive_files, fixed("pmxploit_metadata.rds"))) == 1) {
               files_list <- c(mdata_file, files_list)
             }
 
-            untar_function(
-              tarfile = run_archive, files = files_list,
-              exdir = run_directory, verbose = verbose
+            uncompress_function(
+              run_archive, files = files_list,
+              exdir = run_directory
             )
           }
           break

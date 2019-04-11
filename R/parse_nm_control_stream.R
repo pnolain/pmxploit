@@ -111,7 +111,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     nums <- str_which(lines, str_c("^\\$(", x, ")"))
 
     if (length(nums) > 0) {
-      data_frame(name = rec, start = nums)
+      tibble(name = rec, start = nums)
     } else {
       NULL
     }
@@ -121,7 +121,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
   cleaned_records_df <- records_df %>%
     arrange(start) %>%
-    mutate(end = ifelse(row_number() == n(), length(lines), lead(start) - 1L))
+    mutate(end = ifelse(row_number() == dplyr::n(), length(lines), lead(start) - 1L))
 
   if (has_prior & !any(records_df$name %in% c("THETAP", "THETAPV", "OMEGAP", "OMEGAPD", "SIGMAP", "SIGMAPD"))) { # read only first $THETA and $OMEGA section
     temp_rec_df <- cleaned_records_df %>%
@@ -153,7 +153,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
   grouped_records_df <- cleaned_records_df %>%
     group_by(name) %>%
     summarise(
-      n = n(),
+      n = dplyr::n(),
       start = as.integer(min(start)),
       end = as.integer(max(end))
     ) %>%
@@ -263,18 +263,18 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     # fortran_ops <- c("==" = "EQ", ">=" = "GE", ">" = "GT", "<=" = "LE", "<" = "LT", "!=" = "NE")
     fortran_ops <- tribble(
       ~fortran, ~r,
-      "EQ", "==",
+      ".EQ.", "==",
       "==", "==",
       "=", "==",
-      "GE", ">=",
+      ".GE.", ">=",
       ">=", ">=",
-      "GT", ">",
+      ".GT.", ">",
       ">", ">",
-      "LE", "<=",
+      ".LE.", "<=",
       "<=", "<=",
-      "LT", "<",
+      ".LT.", "<",
       "<", "<",
-      "NE", "!=",
+      ".NE.", "!=",
       "/=", "!="
     )
 
@@ -305,14 +305,14 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
     # separated IGNORE statements
     ignore_pattern2 <- sprintf(
-      "IGNORE\\s*=?\\s*\\((%s)\\s*\\.(%s)\\.\\s*([0-9\\.\\-]+)\\)",
+      "IGNORE\\s*=?\\s*\\((%s)\\s*(%s)\\s*([0-9\\.\\-]+)\\)",
       str_c(input_cols, collapse = "|"),
       str_c(fortran_ops$fortran, collapse = "|")
     )
 
     ignore_matches2 <- str_match_all(data_text, ignore_pattern2)
 
-    if (length(ignore_matches2) > 0) {
+    if (length(unlist(ignore_matches2)) > 0) {
       ignore_df2 <- ignore_matches2 %>%
         .[[1]] %>%
         as_tibble() %>%
@@ -335,22 +335,23 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     if (verbose) print("Parsing $SUBROUTINE...")
 
     sub_text <- lines[records$SUBROUTINE$start:records$SUBROUTINE$end]
-    advan_match <- str_match(sub_text, "ADVAN[0-9]+")
+    advan_match <- str_match(sub_text, "ADVAN=?[0-9]+")
     advan <- ifelse(length(advan_match), as.character(advan_match), NA)
 
     if (!is.na(advan)) {
+      advan <- str_remove(advan, "=")
       if (advan %in% c("ADVAN1", "ADVAN10")) {
-        compartments <- data_frame(cmt = 1, name = "Central", dv_target = TRUE)
+        compartments <- tibble(cmt = 1, name = "Central", dv_target = TRUE)
       } else if (advan == "ADVAN2") {
-        compartments <- data_frame(cmt = 1:2, name = c("Depot", "Central"), dv_target = c(FALSE, TRUE))
+        compartments <- tibble(cmt = 1:2, name = c("Depot", "Central"), dv_target = c(FALSE, TRUE))
       } else if (advan == "ADVAN3") {
-        compartments <- data_frame(cmt = 1:2, name = c("Central", "Peripheral"), dv_target = c(TRUE, FALSE))
+        compartments <- tibble(cmt = 1:2, name = c("Central", "Peripheral"), dv_target = c(TRUE, FALSE))
       } else if (advan == "ADVAN4") {
-        compartments <- data_frame(cmt = 1:3, name = c("Depot", "Central", "Peripheral"), dv_target = c(FALSE, TRUE, FALSE))
+        compartments <- tibble(cmt = 1:3, name = c("Depot", "Central", "Peripheral"), dv_target = c(FALSE, TRUE, FALSE))
       } else if (advan == "ADVAN11") {
-        compartments <- data_frame(cmt = 1:3, name = c("Central", "Peripheral1", "Peripheral2"), dv_target = c(TRUE, FALSE, FALSE))
+        compartments <- tibble(cmt = 1:3, name = c("Central", "Peripheral1", "Peripheral2"), dv_target = c(TRUE, FALSE, FALSE))
       } else if (advan == "ADVAN12") {
-        compartments <- data_frame(cmt = 1:4, name = c("Depot", "Central", "Peripheral1", "Peripheral2"), dv_target = c(FALSE, TRUE, FALSE, FALSE))
+        compartments <- tibble(cmt = 1:4, name = c("Depot", "Central", "Peripheral1", "Peripheral2"), dv_target = c(FALSE, TRUE, FALSE, FALSE))
       }
     }
 
@@ -376,7 +377,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     cp_names <- cp_matches[[1]][, 3]
 
     if (length(cp_names) > 0) {
-      compartments <- data_frame(
+      compartments <- tibble(
         cmt = seq_along(cp_names),
         name = cp_names
       )
@@ -385,7 +386,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
       n_cmt_matches <- str_match(mod_rec_lines, n_cmt_pattern)
       if (length(n_cmt_matches) > 0) {
         n_cmts <- as.integer(n_cmt_matches[, 2])
-        compartments <- data_frame(
+        compartments <- tibble(
           cmt = seq_len(n_cmts),
           name = str_c("CMT_", cmt)
         )
@@ -591,10 +592,10 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
                    n_params <- NA_integer_
                    if(str_detect(tolower(rhs), "to|:")){
-                     params_seq <- str_split(rhs, pattern = "to|:")[[1]] %>% str_trim %>% as.integer
+                     params_seq <- str_split(rhs, pattern = "to|:")[[1]] %>% str_trim %>% parse_number
                      n_params <- params_seq[1]:params_seq[2]
                    } else if(str_detect(tolower(rhs), ",")) {
-                     n_params <- str_split(rhs, pattern = ",")[[1]] %>% str_trim %>% as.integer
+                     n_params <- str_split(rhs, pattern = ",")[[1]] %>% str_trim %>% parse_number
                    } else {
                      as.integer(n_params)
                    }
@@ -766,7 +767,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
   if (length(records$ESTIMATION) > 0) {
     if (verbose) print("Parsing $ESTIMATION...")
 
-    est_matches <- data_frame(
+    est_matches <- tibble(
       method = character(),
       interaction = logical()
     )
@@ -811,7 +812,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
             method_txt <- str_c(ifelse(!is.na(m[, 5]), "CENTERING ", ""), method_txt)
           }
 
-          data_frame(
+          tibble(
             n = i,
             method = method_txt,
             start = start,
@@ -858,7 +859,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
   if (length(records$SIMULATION) > 0) {
     if (verbose) print("Parsing $SIMULATION...")
 
-    sim_matches <- data_frame(
+    sim_matches <- tibble(
       method = character(),
       interaction = logical()
     )
@@ -886,7 +887,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
           n_subpb <- m[, 3]
 
-          data_frame(
+          tibble(
             n = i,
             n_subproblems = as.integer(n_subpb)
           )
@@ -897,12 +898,21 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     }
   }
 
+  # Extra files
+  include_pattern <- "^(include|INCLUDE)\\s([^\\s]+)"
+  include_files <- NULL
+  if (length(include_lines <- str_subset(lines, include_pattern)) > 0) {
+    include_text <- str_c(include_lines, collapse = " ")
+    include_matches <- str_match_all(include_text, include_pattern)[[1]]
+    include_files <- include_matches[, 3] %>% str_replace_all("'|\"", "")
+  }
+
   # $TABLE----
   tab_matches <- NULL
   if (length(records$TABLE) > 0) {
     if (verbose) print("Parsing $TABLE...")
 
-    tab_pattern <- ".+\\bFILE=([^\\s]+)"
+    tab_pattern <- ".+\\bFILE=([^\\s]+).*"
     tab_format_pattern <- ".+FORMAT=([^\\s]+)"
 
     tab_records_df <- cleaned_records_df %>%
@@ -916,6 +926,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
           end <- x$end
 
           tab_def <- lines[start:end] %>%
+             .[!str_detect(., include_pattern)] %>% # remove INCLUDE instructions, if any
             str_c(collapse = " ") %>%
             str_replace("file", "FILE") %>%
             str_replace("format", "FORMAT")
@@ -979,7 +990,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
             mf <- str_match(tab_def, tab_format_pattern)
 
-            t_df <- data_frame(
+            t_df <- tibble(
               file = file,
               firstonly = str_detect(m[, 1], "FIRSTONLY"),
               noheader = str_detect(m[, 1], "NOHEADER"),
@@ -1007,7 +1018,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
         if (length(dup_tables)) {
           warning(simpleWarning(sprintf("Duplicated $TABLE statements: %s.", str_c(dup_tables, collapse = ", "))))
 
-          tab_matches <- tab_matches %>% group_by(file) %>% slice(n()) %>% ungroup()
+          tab_matches <- tab_matches %>% group_by(file) %>% slice(dplyr::n()) %>% ungroup()
           #        tab_matches <- tab_matches %>% slice(which(!duplicated(table_filenames)))
         }
       }
@@ -1020,14 +1031,6 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
       distinct()
   }
 
-  # Extra files
-  include_pattern <- "(include|INCLUDE)\\s([^\\s]+)"
-  include_files <- NULL
-  if (length(include_lines <- str_subset(lines, include_pattern)) > 0) {
-    include_text <- str_c(include_lines, collapse = " ")
-    include_matches <- str_match_all(include_text, include_pattern)[[1]]
-    include_files <- include_matches[, 3] %>% str_replace_all("'|\"", "")
-  }
 
   # MSFI file
   msfi_file <- NULL

@@ -42,17 +42,6 @@ parse_nm_ext <- function(filepath = NULL, content = NULL) {
     unlist() %>%
     str_trim()
 
-  # tab_line_pattern <- "^TABLE NO\\.\\s+([0-9]+):\\s+([^:]+)"
-  # tab_lines_indices <- str_which(content_lines, tab_line_pattern)
-  #
-  # if(length(tab_lines_indices) == 0)
-  #   return(NULL)
-  #
-  # tibble(index = tab_lines_indices,
-  #        line = content_lines[index]) %>%
-  #   extract(line, c("number", "method"), tab_line_pattern, remove = TRUE) %>%
-  #   filter(method != "Chain Method Processing") %>%
-
   tab_line_pattern <- "TABLE NO\\.\\s*([0-9]+): (.+): Goal Function=(.+): Problem=([0-9]+) Subproblem=([0-9]+) Superproblem1=([0-9]+) Iteration1=([0-9]+) Superproblem2=([0-9]+) Iteration2=([0-9]+)"
 
   tab_title_lines <- content_lines %>% str_which(tab_line_pattern)
@@ -79,28 +68,20 @@ parse_nm_ext <- function(filepath = NULL, content = NULL) {
 
       if (!str_detect(header, "^ITERATION")) return(tibble()) # buggy tables
 
-
-
-      cn <- header %>% str_extract_all("[^\\s]+") %>% unlist()
-
+      cn <- header %>%
+        str_extract_all("[^\\s]+") %>%
+        unlist() %>%
+        str_remove_all(",")
 
       est_lines <- content_lines[(start + 2):end]
 
-      # df <- read_table(paste0(str_c(est_lines, collapse = "\n"), "\n"), # paste0 prevents text to be interpreted as file in some cases
-      #                  col_names = cn)
-
-
-      fixed_lines <- est_lines %>% str_replace_all("\\s+", " ")
+      fixed_lines <- est_lines %>%
+        str_replace_all(",", " ") %>%
+        str_replace_all("\\s+", " ")
 
       df <- read_delim(str_c(fixed_lines, "\n", collapse = "\n"),
         delim = " ", col_names = cn
       )
-
-
-      # df <- read_table(str_c(est_lines, collapse = "\n"), col_names = FALSE) %>%
-      #   separate(X1, into = cn, sep = "\\s+") %>%
-      #   mutate_at(vars(-ITERATION), as.double) %>%
-      #   mutate_at(vars(ITERATION), as.integer)
 
       df
     })) %>%

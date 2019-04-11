@@ -7,7 +7,7 @@
 #'
 #' @examples
 #' EXAMPLERUN %>%
-#'      plot_residuals(compartment = 2, regressor = c("TIME", "PRED"), residuals = "CWRES")+
+#'      plot_residuals(compartment = 2, idv = c("TIME", "PRED"), residuals = "CWRES")+
 #'      theme_pmx()
 theme_pmx <- function() {
   theme_bw() +

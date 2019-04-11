@@ -187,7 +187,7 @@ plot_parameters_correlations <-
         rename(correlation = value) %>%
         filter(!is.na(correlation)) %>%
         group_by(parameter2) %>%
-        mutate(N = n()) %>%
+        mutate(N = dplyr::n()) %>%
         ungroup() %>%
         arrange(desc(N)) %>%
         select(-N)

@@ -212,10 +212,6 @@ $TAB ID TIME ISC DISST SEX FIBR EZE STATIN ARM ABDO THIGH STUD NOHEADER NOPRINT 
 ]]></nm:nmtran>
 <nm:nonmem nm:version='7.3.0'>
 <nm:license_information><![CDATA[
-License Registered to: Sanofi-Aventis Recherche
-Expiration Date:    14 JAN 2019
-Current Date:       14 JUN 2018
-Days until program expires : 215
 ]]></nm:license_information>
 <nm:program_information><![CDATA[
 1NONLINEAR MIXED EFFECTS MODEL PROGRAM (NONMEM) VERSION 7.3.0

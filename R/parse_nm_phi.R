@@ -62,26 +62,22 @@ parse_nm_phi <- function(filepath = NULL, content = NULL) {
     filter(start_index != end_index) %>% # filter out if no iteration reported yet
     mutate(individuals = map2(start_index, end_index, function(start, end) {
       header <- content_lines[(start + 1)]
-      cn <- header %>% str_extract_all("[^\\s]+") %>% unlist()
+
+      cn <- header %>%
+        str_extract_all("[^\\s]+") %>%
+        unlist() %>%
+        str_remove_all(",")
 
       est_lines <- content_lines[(start + 2):end]
 
-      # df <- read_table(paste0(str_c(est_lines, collapse = "\n"), "\n"), # paste0 prevents text to be interpreted as file in some cases
-      #                  col_names = cn)
-
-
-      fixed_lines <- est_lines %>% str_replace_all("\\s+", " ")
+      fixed_lines <- est_lines %>%
+        str_replace_all(",", " ") %>%
+        str_replace_all("\\s+", " ")
 
       df <- read_delim(str_c(fixed_lines, "\n", collapse = "\n"),
         guess_max = length(fixed_lines),
         delim = " ", col_names = cn
       )
-
-
-      # df <- read_table(str_c(est_lines, collapse = "\n"), col_names = FALSE) %>%
-      #   separate(X1, into = cn, sep = "\\s+") %>%
-      #   mutate_at(vars(-ITERATION), as.double) %>%
-      #   mutate_at(vars(ITERATION), as.integer)
 
       df
     })) %>%

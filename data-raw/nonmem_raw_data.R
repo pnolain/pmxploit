@@ -62,8 +62,11 @@ EXAMPLERUN <- load_nm_run("data-raw/TMDD_Djebli_al") %>%
     "Glomerular filtration rate (mL/min)" = "GFR",
     "Baseline total PCSK9 (nM)" = "TBSPCSK",
     "Weight (kg)" = "WT"
-  ))
+  )) %>%
+  rename_compartments(compartments = c("Total Alirocumab" = 2,
+                                       "Total PCSK9" = 3))
 
-EXAMPLERUN$info$path <- "/pmxploit/example/TMDD_Djebli_al"
 
-devtools::use_data(nm_reserved_names, nonmem_txtmsgs, nm_predictions, nm_residuals, EXAMPLERUN, internal = TRUE, overwrite = TRUE)
+EXAMPLERUN$info$path <- "~/pmxploit/example.tar.gz"
+
+usethis::use_data(nm_reserved_names, nonmem_txtmsgs, nm_predictions, nm_residuals, EXAMPLERUN, internal = TRUE, overwrite = TRUE)

@@ -35,7 +35,7 @@ print.nonmem_run <- function(x, ...) {
     txt <- c(
       txt,
       str_c(
-        "PMXploit data is filtered:\n",
+        "pmxploit data is filtered:\n",
         "\tFilters:\n",
         str_c(sprintf("\t%s", as.character(active_filters)), collapse = "\n"),
         "\n\tSummary:\n",
