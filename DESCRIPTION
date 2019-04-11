@@ -9,7 +9,7 @@ Description: Helper package for exploitation of NONMEM runs.
   model comparison and reporting.
 Depends:
   R (>= 3.4.1)
-License: GPL-3
+License: LGPL-3
 LazyData: TRUE
 Imports:
   broom,
