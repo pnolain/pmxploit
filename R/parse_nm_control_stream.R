@@ -286,13 +286,13 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
         str_c(collapse = ",") %>%
         str_replace_all("\\s", "")
 
-      split_ignore <- ignore_text %>% str_split(",") %>% unlist()
+      split_ignore <- ignore_text %>% str_split(",") %>% unlist() %>% str_remove_all("\"|'")
 
       ignore_df <- tibble(condition = split_ignore) %>%
         # separate(condition, c("column", "operator", "value"), convert = TRUE) %>%
         extract(condition, c("column", "operator", "value"),
           regex = sprintf(
-            "(%s)[\\.]?(%s)[\\.]?['\"]?([:alnum:]+)['\"]?",
+            "(%s)[\\.]?(%s)[\\.]?['\"]?(.+)['\"]?",
             str_c(input_cols, collapse = "|"),
             str_c(fortran_ops$fortran, collapse = "|")
           ),
