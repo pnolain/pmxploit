@@ -13,7 +13,7 @@ plot_parameters_correlations(run, parameters = NULL, type = "heatmap",
 \item{run}{\code{pmxploit} NONMEM run object.}
 
 \item{parameters}{character vector of parameters names. Default is \code{NULL},
-returning all individual parameters (random and post-hoc).#'}
+returning all individual parameters (random and post-hoc).}
 
 \item{type}{character. Type of plot. One of \code{heatmap} or \code{scatterplot}.}
 

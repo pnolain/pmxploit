@@ -4,7 +4,7 @@
 #' data frame or a plot.
 #'
 #' @param parameters character vector of parameters names. Default is \code{NULL},
-#'   returning all individual parameters (random and post-hoc).#'
+#'   returning all individual parameters (random and post-hoc).
 #' @param type character. Type of plot. One of \code{heatmap} or \code{scatterplot}.
 #' @param smoothing_method character. If \code{type = "scatterplot"}, corresponds
 #'   to a \code{ggplot2} smoothing method.

@@ -43,7 +43,7 @@ in different colours.}
 \code{"free"}.}
 
 \item{transparency}{logical. Plot scatterplot dots with transparency, useful
-to avoid overplotting with large datasets. Default is {FALSE}.#'}
+to avoid overplotting with large datasets. Default is {FALSE}.}
 
 \item{auto_legend}{logical. When \code{TRUE} (default), default \code{pmxploit} plotting
 options are applied (title, labels, axis...).}

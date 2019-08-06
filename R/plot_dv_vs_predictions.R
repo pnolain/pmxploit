@@ -6,7 +6,7 @@
 #'   Default is \code{"DV"}.
 #' @param predictions character vector. Name of the predictions column(s) in the
 #'   dataset. Default is \code{"PRED"} for both population predictions and
-#'   individual predictions.#'
+#'   individual predictions.
 #' @param log_dv logical. Set it to \code{TRUE} if the source dependent variable are in log_scale.
 #' @param facetted logical. If \code{TRUE} (default), plots each "DV vs predictions" subset inside a separate facet.
 #' @param split_by character vector. Name of categorical covariates used to split the
@@ -24,7 +24,7 @@
 #' @param keep_time_zero logical. If \code{TRUE}, does not ignore values at initiation (when TIME = 0).
 #' Default is \code{FALSE}.
 #' @param transparency logical. Plot scatterplot dots with transparency, useful
-#'   to avoid overplotting with large datasets. Default is {FALSE}.#'
+#'   to avoid overplotting with large datasets. Default is {FALSE}.
 #' @param auto_legend logical. When \code{TRUE} (default), default \code{pmxploit} plotting
 #'   options are applied (title, labels, axis...).
 #'

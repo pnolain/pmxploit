@@ -22,7 +22,7 @@ plot_individual_profiles(run, ids = NULL, compartment,
 
 \item{predictions}{character vector. Name of the predictions column(s) in the
 dataset. Default is \code{"PRED"} for both population predictions and
-individual predictions.#'}
+individual predictions.}
 
 \item{idv}{character. Name of the independent variable column to plot on the x-axis. Default is \code{"TIME"}.}
 
