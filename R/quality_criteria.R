@@ -166,8 +166,8 @@ quality_criteria <- function(run,
         value = pred_err_mean,
         ci_low = pred_err_mean - bias_val,
         ci_up = pred_err_mean + bias_val,
-        relative_value = value / obs_mean
-        # relative_value = mean(pred_err / observations)
+        # relative_value = value / obs_mean
+        relative_value = mean(pred_err / observations)
       )
 
       #   # ME = Maximal Error
@@ -205,7 +205,7 @@ quality_criteria <- function(run,
       if (length(run$model$residuals) > 0) {
         t_test_res <- tibble(residuals = run$model$residuals) %>%
           mutate(t.test = map(run$model$residuals, function(res) {
-            res_data <- df[[res]]
+            res_data <- sub_df[[res]]
             t.test(
               x = res_data, y = rep(0, length(res_data)), alternative = "two.sided", mu = 0, paired = TRUE, var.equal = TRUE,
               conf.level = 1 - alpha
