@@ -244,12 +244,15 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     data_pattern <- "^\\$DATA\\s*[\"']?([^\\s\"']+)"
     if (str_detect(data_text, data_pattern)) {
       data_filename <- str_match(data_text, data_pattern)[, 2]
+      data_text <- data_text %>% str_remove(data_pattern) %>% str_trim()
     }
 
     ignore_txt_pattern <- "IGNORE(=|\\s*)['\"]?([aA-zZ@#])+['\"]?"
 
     if (str_detect(data_text, ignore_txt_pattern)) {
       ignore_txt <- str_match(data_text, ignore_txt_pattern)[, 3]
+
+      data_text <- data_text %>% str_remove(ignore_txt_pattern) %>% str_trim()
     }
 
 
@@ -278,11 +281,13 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
       "/=", "!="
     )
 
+    data_text<- data_text %>% str_split("\\s+") %>% unlist()
     ignore_group_pattern <- "IGNORE\\s*=?\\s*\\((.+)\\)"
 
     if (any(str_detect(data_text, ignore_group_pattern))) {
       ignore_matches <- str_match(data_text, ignore_group_pattern)
       ignore_text <- ignore_matches[, 2] %>%
+        na.omit() %>%
         str_c(collapse = ",") %>%
         str_replace_all("\\s", "")
 
@@ -325,6 +330,9 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
       ignore_df <- unique(bind_rows(ignore_df, ignore_df2))
     }
+
+    if(!is.null(ignore_df))
+      ignore_df <- ignore_df %>% mutate(value = as.numeric(value))
   }
 
   compartments <- NULL
