@@ -166,7 +166,7 @@ quality_criteria <- function(run,
         value = pred_err_mean,
         ci_low = pred_err_mean - bias_val,
         ci_up = pred_err_mean + bias_val,
-        relative_value = mean(pred_err / obs_mean)
+        relative_value = pred_err_mean / obs_mean
       )
 
       #   # ME = Maximal Error
