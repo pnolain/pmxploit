@@ -186,7 +186,11 @@ plot_dv_vs_predictions <- function(run = NULL, compartment = NULL, dv = "DV", pr
       groups <- g_df %>% group_by(!!!grps) %>% summarise() %>% ungroup()
 
       if (facetted) {
-        facets <- crossing(predictions, dv, groups)
+        if(length(groups) > 0){
+          facets <- crossing(predictions, dv, groups)
+        } else {
+          facets <- crossing(predictions, dv)
+        }
       } else {
         facets <- crossing(dv, groups)
       }
