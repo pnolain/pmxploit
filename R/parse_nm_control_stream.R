@@ -611,7 +611,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
                           n = n_params,
                           multiple = length(name_params) != length(n_params))
                  })) %>%
-          unnest() %>%
+          unnest(c(n)) %>%
           mutate(name = ifelse(multiple, str_c(name, n), name),
                  id = str_c(V2, n), n = as.integer(n)) %>%
           select(n, id, type, name) %>%

@@ -101,9 +101,9 @@ nm_simulation <- function(run,
     sigma_text <- NULL
     current_sm <- 1
     while(TRUE){
-      if(any(sb$frsm == current_sm)){
-        current_block <- sb %>% filter(frsm == current_sm)
-        fr <- current_block$frsm
+      if(any(sb$from == current_sm)){
+        current_block <- sb %>% filter(from == current_sm)
+        fr <- current_block$from
         to <- current_block$to
 
         cn <- crossing(a = fr:to, b = fr:to) %>% filter(a <= b) %>% mutate(text = sprintf("SIGMA(%s,%s)", a, b))
