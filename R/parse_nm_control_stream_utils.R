@@ -226,9 +226,10 @@ parse_matrix_record <- function(lines, record_name) {
       to = map_int(data, ~max(.$n_val1)),
       fixed_block = map_lgl(data, ~any(.$fixed))
     ) %>%
-    rename(n = n_record) %>%
-    mutate(n = row_number()) %>%
-    select(n, from, to, fixed_block, data)
+    # rename(n = n_record) %>%
+    ungroup() %>%
+    mutate(num = row_number()) %>%
+    select(num, from, to, fixed_block, data)
 
   recs_values <- recs_df %>%
     mutate(
