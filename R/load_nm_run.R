@@ -1426,7 +1426,7 @@ load_nm_run_directory <-
 
 #' Load a NONMEM run data
 #'
-#' Loads NONMEM run results data from either a folder or a archive file (tar.gz or zip).
+#' Loads NONMEM run results data from either a folder or a archive file (tar.gz, tgz or zip).
 #'
 #' @param path character. Run folder or archive file path.
 #' @param temp_directory (optional) character. When \code{path} is an archive file,
@@ -1490,8 +1490,8 @@ load_nm_run <-
 
       run_archive <- normalizePath(run_archive)
 
-      if (!(str_detect(tolower(run_archive), "(\\.tar\\.gz|\\.zip)$"))) {
-        stop(simpleError("Run archive file has to be a *.tar.gz or *.zip file."))
+      if (!(str_detect(tolower(run_archive), "(\\.tar\\.gz|\\.zip|\\.tgz)$"))) {
+        stop(simpleError("Run archive file has to be a *.tar.gz, *.tgz or *.zip file."))
       }
 
       is_zip <- (tolower(tools::file_ext(run_archive)) == "zip")

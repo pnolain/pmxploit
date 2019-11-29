@@ -31,8 +31,10 @@ inst/doc
 
 # custom
 misc/
-# all *.tar.gz
+# all archives
 *.tar.gz
+*.tgz
+*.zip
 
 tests/testthat/test-hidden.R
 tests/testthat/hidden
