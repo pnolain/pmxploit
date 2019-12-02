@@ -36,5 +36,7 @@ misc/
 *.tgz
 *.zip
 
+.DS_Store
+
 tests/testthat/test-hidden.R
 tests/testthat/hidden
