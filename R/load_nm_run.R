@@ -537,7 +537,7 @@ load_nm_run_directory <-
           temp_correlation_matrix <- correlation_matrix
           diag(temp_correlation_matrix) <- NA
 
-          estimation$correlation <- any(!is.na(temp_correlation_matrix) & temp_correlation_matrix >= 0.96)
+          estimation$correlation <- any(!is.na(temp_correlation_matrix) & abs(temp_correlation_matrix) >= 0.96)
         }
 
         estimation$correlation_matrix <- correlation_matrix
