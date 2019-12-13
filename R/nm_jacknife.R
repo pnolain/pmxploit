@@ -5,7 +5,8 @@
 #' @return A vector containing the paths of the generated control files
 #' @export
 #'
-#' @examples#' \notrun{
+#' @examples
+#' \dontrun{
 #' nm_jacknife(pmxploit::EXAMPLERUN)
 #' }
 nm_jacknife <- function(run,

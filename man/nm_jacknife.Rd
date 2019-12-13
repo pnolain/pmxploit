@@ -20,7 +20,7 @@ A vector containing the paths of the generated control files
 Generates control files and dataset for jacknife analysis
 }
 \examples{
-#' \notrun{
+\dontrun{
 nm_jacknife(pmxploit::EXAMPLERUN)
 }
 }

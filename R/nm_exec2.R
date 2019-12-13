@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-#' \notrun{
+#' \dontrun{
 #' nm_exec2(control_file = "control_file.ctl", custom_script = "/path/to/script", call_template = "{custom_script} | {control_file}")
 #' }
 nm_exec2 <- function(control_file,

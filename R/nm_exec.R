@@ -16,7 +16,7 @@
 #' @export
 #'
 #' @examples
-#' \notrun{
+#' \dontrun{
 #' nm_exec(control_file = "control_file.ctl", nonmem_exe = "/path/to/nmfe")
 #' }
 nm_exec <- function(control_file,

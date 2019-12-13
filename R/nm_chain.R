@@ -11,7 +11,7 @@
 #' @export
 #'
 #' @examples
-#' \notrun{
+#' \dontrun{
 #' nm_chain(pmxploit::EXAMPLERUN)
 #' }
 nm_chain <- function(run,

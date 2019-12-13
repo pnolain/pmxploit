@@ -49,7 +49,7 @@ A \code{pmxploit} NONMEM run object.
 Starts a NONMEM run
 }
 \examples{
-\notrun{
+\dontrun{
 nm_exec(control_file = "control_file.ctl", nonmem_exe = "/path/to/nmfe")
 }
 }

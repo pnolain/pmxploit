@@ -10,7 +10,7 @@
 #' @export
 #'
 #' @examples
-#' \notrun{
+#' \dontrun{
 #' nm_bootstrap(pmxploit::EXAMPLERUN)
 #' }
 nm_bootstrap <- function(run,

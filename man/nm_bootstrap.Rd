@@ -30,7 +30,7 @@ A vector containing the paths of the generated control files
 Generates control files and dataset for bootstrap analysis
 }
 \examples{
-\notrun{
+\dontrun{
 nm_bootstrap(pmxploit::EXAMPLERUN)
 }
 }
