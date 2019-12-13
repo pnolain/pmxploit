@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-#' \notrun{
+#' \dontrun{
 #' nm_check(control_file = "control_file.ctl",
 #' nmcheck_exe = "/path/to/nmtran.exe",
 #' call_template = "cat {control_file} | {nmcheck_exe}")

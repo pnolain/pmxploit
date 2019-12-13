@@ -42,7 +42,7 @@ Generates control files and dataset for $CHAIN analysis
 See NONMEM documentation for details about IACCEPT, CTYPE and DF parameters.
 }
 \examples{
-\notrun{
+\dontrun{
 nm_chain(pmxploit::EXAMPLERUN)
 }
 }
