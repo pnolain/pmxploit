@@ -4,13 +4,26 @@
 \alias{plot_individual_profiles}
 \title{Individual profiles (observations, predictions) versus independent variable}
 \usage{
-plot_individual_profiles(run, ids = NULL, compartment,
-  predictions = "PRED", idv = "TIME", log_dv = FALSE,
-  predictions_dots = TRUE, show_observations = TRUE,
-  categorical_covariate = NULL, x_scale = "linear",
-  y_scale = "linear", logticks_annotation = TRUE, facetted = TRUE,
-  facet_scales = "free", n_row = NULL, n_col = NULL,
-  keep_time_zero = FALSE, auto_legend = TRUE)
+plot_individual_profiles(
+  run,
+  ids = NULL,
+  compartment,
+  predictions = "PRED",
+  idv = "TIME",
+  log_dv = FALSE,
+  predictions_dots = TRUE,
+  show_observations = TRUE,
+  categorical_covariate = NULL,
+  x_scale = "linear",
+  y_scale = "linear",
+  logticks_annotation = TRUE,
+  facetted = TRUE,
+  facet_scales = "free",
+  n_row = NULL,
+  n_col = NULL,
+  keep_time_zero = FALSE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

@@ -220,16 +220,21 @@ parse_matrix_record <- function(lines, record_name) {
   matrix_blocks <- recs_df %>%
     filter(block_length > 1) %>%
     group_by(n_record) %>%
-    nest(data = c(row, column, inner_n, n_val1, value, fixed)) %>%
+    # nest(data = c(row, column, inner_n, n_val1, value, fixed)) %>%
+    nest(data = -c(n_record)) %>%
     mutate(
       from = map_int(data, ~min(.$n_val1)),
       to = map_int(data, ~max(.$n_val1)),
       fixed_block = map_lgl(data, ~any(.$fixed))
     ) %>%
-    # rename(n = n_record) %>%
-    ungroup() %>%
-    mutate(num = row_number()) %>%
-    select(num, from, to, fixed_block, data)
+    rename(n = n_record) %>%
+    # ungroup() %>%
+    # mutate(n = row_number()) %>%
+    # group_by(n) %>%
+    select(n, from, to, fixed_block, data)
+    # ungroup() %>%
+    # mutate(num = row_number()) %>%
+    # select(num, from, to, fixed_block, data)
 
   recs_values <- recs_df %>%
     mutate(

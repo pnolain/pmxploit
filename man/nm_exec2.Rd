@@ -18,7 +18,7 @@ A character string returned by the system call.
 Starts a NONMEM run and do not wait for the results. Useful when NONMEM jobs are run via an HPC scheduler or a cloud solution.
 }
 \examples{
-\\notrun{
+\notrun{
 nm_exec2(control_file = "control_file.ctl", custom_script = "/path/to/script", call_template = "{custom_script} | {control_file}")
 }
 }

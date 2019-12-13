@@ -28,12 +28,12 @@ plot_individual_ofv <- function(run, estimation_number = NULL, ids = NULL, order
 
   ofv_col <- last(colnames(selected_est$iterations))
   ofv_sym <- sym(ofv_col)
-  x_sym <- if(ordered) quo(reorder(ID, UQ(ofv_sym))) else quo(ID)
+  x_sym <- if(ordered) quo(reorder(ID, !!(ofv_sym))) else quo(ID)
 
   g <- ggplot(phi_df,
-              aes(x = UQ(x_sym),
-                  y =  UQ(ofv_sym)))+
-    geom_pointrange(aes(ymin = 0, ymax = UQ(ofv_sym)))+
+              aes(x = !!(x_sym),
+                  y =  !!(ofv_sym)))+
+    geom_pointrange(aes(ymin = 0, ymax = !!(ofv_sym)))+
     scale_y_continuous(expand= c(0, 0.6))
 
   if (auto_legend) {

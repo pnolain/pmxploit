@@ -4,10 +4,19 @@
 \alias{plot_parameters_vs_continuous_covariates}
 \title{Parameters vs continuous covariates correlations}
 \usage{
-plot_parameters_vs_continuous_covariates(run, parameters = NULL,
-  covariates = NULL, type = "heatmap", correlation_method = NULL,
-  auto_order = TRUE, baseline_only = TRUE, smoothing_method = NULL,
-  smoothing_se = TRUE, fixed_ratio = TRUE, auto_legend = TRUE)
+plot_parameters_vs_continuous_covariates(
+  run,
+  parameters = NULL,
+  covariates = NULL,
+  type = "heatmap",
+  correlation_method = NULL,
+  auto_order = TRUE,
+  baseline_only = TRUE,
+  smoothing_method = NULL,
+  smoothing_se = TRUE,
+  fixed_ratio = TRUE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

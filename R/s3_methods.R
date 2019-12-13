@@ -30,7 +30,7 @@ print.nonmem_run <- function(x, ...) {
   active_filters <- attr(x$tables$pmxploitab, "filters")
 
   if (!is.null(active_filters)) {
-    filtered <- x %>% filter(UQS(active_filters))
+    filtered <- x %>% filter(!!!(active_filters))
 
     txt <- c(
       txt,
@@ -69,7 +69,7 @@ filter.nonmem_run <- function(x, ...) {
 
   if (length(filters) > 0) {
     temp_tab <- x$tables$pmxploitab %>%
-      filter(UQS(filters))
+      filter(!!!(filters))
 
     x$tables$pmxploitab <- temp_tab
 
@@ -94,7 +94,7 @@ group_by.nonmem_run <- function(x, ...) {
   grps <- quos(...)
 
   temp_tab <- x$tables$pmxploitab %>%
-    group_by(UQS(grps))
+    group_by(!!!(grps))
 
   x$tables$pmxploitab <- temp_tab
 

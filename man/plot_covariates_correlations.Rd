@@ -4,10 +4,18 @@
 \alias{plot_covariates_correlations}
 \title{Continuous covariates correlations}
 \usage{
-plot_covariates_correlations(run, covariates = NULL,
-  baseline_only = TRUE, correlation_method = NULL, auto_order = TRUE,
-  smoothing_method = NULL, smoothing_se = TRUE, type = "heatmap",
-  fixed_ratio = TRUE, auto_legend = TRUE)
+plot_covariates_correlations(
+  run,
+  covariates = NULL,
+  baseline_only = TRUE,
+  correlation_method = NULL,
+  auto_order = TRUE,
+  smoothing_method = NULL,
+  smoothing_se = TRUE,
+  type = "heatmap",
+  fixed_ratio = TRUE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

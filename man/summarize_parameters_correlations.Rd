@@ -4,8 +4,13 @@
 \alias{summarize_parameters_correlations}
 \title{Parameters correlations}
 \usage{
-summarize_parameters_correlations(run, parameters = NULL,
-  baseline_only = TRUE, correlation_method = NULL, auto_order = TRUE)
+summarize_parameters_correlations(
+  run,
+  parameters = NULL,
+  baseline_only = TRUE,
+  correlation_method = NULL,
+  auto_order = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

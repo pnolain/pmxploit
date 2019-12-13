@@ -4,8 +4,13 @@
 \alias{nm_bootstrap}
 \title{Generates control files and dataset for bootstrap analysis}
 \usage{
-nm_bootstrap(run, target_directory = "bootstrap", n_sample = 200,
-  seed = 1000, update_progress = NULL)
+nm_bootstrap(
+  run,
+  target_directory = "bootstrap",
+  n_sample = 200,
+  seed = 1000,
+  update_progress = NULL
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object of the source run.}
@@ -25,7 +30,7 @@ A vector containing the paths of the generated control files
 Generates control files and dataset for bootstrap analysis
 }
 \examples{
-\\notrun{
+\notrun{
 nm_bootstrap(pmxploit::EXAMPLERUN)
 }
 }

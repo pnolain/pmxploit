@@ -237,7 +237,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
   data_filename <- NULL
   ignore_txt <- NULL
   ignore_df <- NULL
-  if (length(records$DATA) > 0) {
+  if (length(records$DATA) > 0 & !is.null(input_matches)) {
     if (verbose) print("Parsing $DATA...")
 
     data_text <- lines[records$DATA$start:records$DATA$end] %>% str_c(collapse = " ") # lines[records$DATA:(records$SUBROUTINE-1)] %>% str_c(collapse = " ")
@@ -252,7 +252,9 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     if (str_detect(data_text, ignore_txt_pattern)) {
       ignore_txt <- str_match(data_text, ignore_txt_pattern)[, 3]
 
-      data_text <- data_text %>% str_remove(ignore_txt_pattern) %>% str_trim()
+      data_text <- data_text %>% str_remove(ignore_txt_pattern) %>% str_trim() %>%
+        str_remove_all("\\s") %>%
+        str_replace("\\)", ") ")
     }
 
 

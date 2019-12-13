@@ -4,11 +4,19 @@
 \alias{plot_continuous_covariates_distributions}
 \title{Continuous covariates distributions}
 \usage{
-plot_continuous_covariates_distributions(run, covariates = NULL,
-  baseline_only = TRUE, type = "histogram", histogram_bins = 30L,
-  boxplot_facets = TRUE, boxplot_drop_unused = FALSE,
-  qq_reference_distribution = qnorm, facet_scales = "free",
-  overlay_splits = TRUE, auto_legend = TRUE)
+plot_continuous_covariates_distributions(
+  run,
+  covariates = NULL,
+  baseline_only = TRUE,
+  type = "histogram",
+  histogram_bins = 30L,
+  boxplot_facets = TRUE,
+  boxplot_drop_unused = FALSE,
+  qq_reference_distribution = qnorm,
+  facet_scales = "free",
+  overlay_splits = TRUE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

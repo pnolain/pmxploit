@@ -29,7 +29,7 @@ dplyr::slice
 #' @importFrom purrr compact flatten keep quietly safely map map_chr map_df map_dbl map_lgl map_int map2 map2_chr map2_dbl modify modify_if pmap pmap_chr update_list
 #' @importFrom tibble add_column add_row as_tibble tibble tribble
 #' @importFrom lubridate interval seconds ymd_hms
-#' @importFrom rlang caller_env as_quosure parse_quo quo quos set_names sym syms UQ UQS
+#' @importFrom rlang caller_env as_quosure parse_quo quo quos set_names sym syms !! !!!
 #' @import XML ggplot2
 NULL
 
@@ -345,7 +345,7 @@ get_reduced_dataset <- function(source_df, baseline_only) {
 
   # re-group like the original
   if (!is.null(original_groups)) {
-    df <- df %>% group_by(UQS(syms(original_groups)))
+    df <- df %>% group_by(!!!(syms(original_groups)))
   }
 
   df

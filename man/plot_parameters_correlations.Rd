@@ -4,10 +4,18 @@
 \alias{plot_parameters_correlations}
 \title{Plot parameters correlations}
 \usage{
-plot_parameters_correlations(run, parameters = NULL, type = "heatmap",
-  correlation_method = NULL, baseline_only = TRUE, auto_order = TRUE,
-  smoothing_method = NULL, smoothing_se = TRUE, fixed_ratio = TRUE,
-  auto_legend = TRUE)
+plot_parameters_correlations(
+  run,
+  parameters = NULL,
+  type = "heatmap",
+  correlation_method = NULL,
+  baseline_only = TRUE,
+  auto_order = TRUE,
+  smoothing_method = NULL,
+  smoothing_se = TRUE,
+  fixed_ratio = TRUE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

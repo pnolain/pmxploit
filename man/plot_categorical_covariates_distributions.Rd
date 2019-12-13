@@ -4,9 +4,16 @@
 \alias{plot_categorical_covariates_distributions}
 \title{Categorical covariates distributions bar charts}
 \usage{
-plot_categorical_covariates_distributions(run, covariates = NULL,
-  frequency = FALSE, order = TRUE, drop = FALSE,
-  bar_adjustment = "dodge", baseline_only = TRUE, auto_legend = TRUE)
+plot_categorical_covariates_distributions(
+  run,
+  covariates = NULL,
+  frequency = FALSE,
+  order = TRUE,
+  drop = FALSE,
+  bar_adjustment = "dodge",
+  baseline_only = TRUE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

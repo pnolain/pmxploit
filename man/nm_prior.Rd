@@ -4,8 +4,14 @@
 \alias{nm_prior}
 \title{Generate a NONMEM control stream with $PRIOR}
 \usage{
-nm_prior(run, df_formula = 0, df_values = NULL, output_file = NULL,
-  dataset_filename = NULL, estimations = NULL)
+nm_prior(
+  run,
+  df_formula = 0,
+  df_values = NULL,
+  output_file = NULL,
+  dataset_filename = NULL,
+  estimations = NULL
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object of the source run.}

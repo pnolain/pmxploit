@@ -4,8 +4,13 @@
 \alias{plot_individual_ofv}
 \title{Individual contribution to objective function plot}
 \usage{
-plot_individual_ofv(run, estimation_number = NULL, ids = NULL,
-  ordered = TRUE, auto_legend = TRUE)
+plot_individual_ofv(
+  run,
+  estimation_number = NULL,
+  ids = NULL,
+  ordered = TRUE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

@@ -4,8 +4,12 @@
 \alias{summarize_continuous_covariates}
 \title{Continuous covariates distributions summary}
 \usage{
-summarize_continuous_covariates(run, covariates = NULL,
-  quantiles = c(0.05, 0.25, 0.75, 0.95), baseline_only = TRUE)
+summarize_continuous_covariates(
+  run,
+  covariates = NULL,
+  quantiles = c(0.05, 0.25, 0.75, 0.95),
+  baseline_only = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

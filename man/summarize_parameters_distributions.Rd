@@ -4,8 +4,12 @@
 \alias{summarize_parameters_distributions}
 \title{Individual parameters distributions summary}
 \usage{
-summarize_parameters_distributions(run, parameters = NULL,
-  quantiles = c(0.05, 0.25, 0.75, 0.95), baseline_only = TRUE)
+summarize_parameters_distributions(
+  run,
+  parameters = NULL,
+  quantiles = c(0.05, 0.25, 0.75, 0.95),
+  baseline_only = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

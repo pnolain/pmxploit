@@ -4,14 +4,21 @@
 \alias{plot_parameters_distributions}
 \title{Individual parameters distributions}
 \usage{
-plot_parameters_distributions(run, parameters = NULL,
-  baseline_only = TRUE, type = "histogram", histogram_bins = 30L,
+plot_parameters_distributions(
+  run,
+  parameters = NULL,
+  baseline_only = TRUE,
+  type = "histogram",
+  histogram_bins = 30L,
   histogram_empirical_density = FALSE,
-  histogram_reference_distribution = list(fun = dnorm, args = list(mean =
-  0, sd = 1)), qq_reference_distribution = list(fun = qnorm, args =
-  list(mean = 0, sd = 1)), boxplot_facets = TRUE,
-  boxplot_drop_unused = FALSE, facet_scales = "free",
-  overlay_splits = TRUE, auto_legend = TRUE)
+  histogram_reference_distribution = list(fun = dnorm, args = list(mean = 0, sd = 1)),
+  qq_reference_distribution = list(fun = qnorm, args = list(mean = 0, sd = 1)),
+  boxplot_facets = TRUE,
+  boxplot_drop_unused = FALSE,
+  facet_scales = "free",
+  overlay_splits = TRUE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

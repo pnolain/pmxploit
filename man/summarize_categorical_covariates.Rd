@@ -4,8 +4,7 @@
 \alias{summarize_categorical_covariates}
 \title{Categorical covariates summary}
 \usage{
-summarize_categorical_covariates(run, covariates = NULL,
-  baseline_only = TRUE)
+summarize_categorical_covariates(run, covariates = NULL, baseline_only = TRUE)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

@@ -4,9 +4,15 @@
 \alias{detect_outliers}
 \title{Outliers detection}
 \usage{
-detect_outliers(run, compartment = NULL, residuals = NULL,
-  method = "grubbs", grubbs_pvalue_threshold = 0.05,
-  boxplot_coefficient = 3, keep_time_zero = FALSE)
+detect_outliers(
+  run,
+  compartment = NULL,
+  residuals = NULL,
+  method = "grubbs",
+  grubbs_pvalue_threshold = 0.05,
+  boxplot_coefficient = 3,
+  keep_time_zero = FALSE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}
