@@ -4,8 +4,13 @@
 \alias{summarize_covariates_correlations}
 \title{Continuous covariates correlations summary}
 \usage{
-summarize_covariates_correlations(run, covariates = NULL,
-  baseline_only = TRUE, correlation_method = NULL, auto_order = TRUE)
+summarize_covariates_correlations(
+  run,
+  covariates = NULL,
+  baseline_only = TRUE,
+  correlation_method = NULL,
+  auto_order = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

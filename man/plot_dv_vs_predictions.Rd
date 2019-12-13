@@ -4,12 +4,24 @@
 \alias{plot_dv_vs_predictions}
 \title{Dependent variables vs Predictions plot}
 \usage{
-plot_dv_vs_predictions(run = NULL, compartment = NULL, dv = "DV",
-  predictions = "PRED", log_dv = FALSE, facetted = TRUE,
-  smoothing_method = NULL, smoothing_se = TRUE, identity_line = TRUE,
-  x_scale = "linear", y_scale = "linear", logticks_annotation = TRUE,
-  facet_scales = "free", transparency = FALSE,
-  keep_time_zero = FALSE, auto_legend = TRUE)
+plot_dv_vs_predictions(
+  run = NULL,
+  compartment = NULL,
+  dv = "DV",
+  predictions = "PRED",
+  log_dv = FALSE,
+  facetted = TRUE,
+  smoothing_method = NULL,
+  smoothing_se = TRUE,
+  identity_line = TRUE,
+  x_scale = "linear",
+  y_scale = "linear",
+  logticks_annotation = TRUE,
+  facet_scales = "free",
+  transparency = FALSE,
+  keep_time_zero = FALSE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

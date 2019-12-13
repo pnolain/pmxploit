@@ -4,10 +4,20 @@
 \alias{nm_exec}
 \title{Starts a NONMEM run}
 \usage{
-nm_exec(control_file, run_directory = NULL, nonmem_exe = NULL,
-  n_nodes = 1L, parafile = NULL, result_directory = NULL,
-  job_id = NULL, archive = TRUE, cleanup = TRUE, quiet = FALSE,
-  call_template = NULL, ...)
+nm_exec(
+  control_file,
+  run_directory = NULL,
+  nonmem_exe = NULL,
+  n_nodes = 1L,
+  parafile = NULL,
+  result_directory = NULL,
+  job_id = NULL,
+  archive = TRUE,
+  cleanup = TRUE,
+  quiet = FALSE,
+  call_template = NULL,
+  ...
+)
 }
 \arguments{
 \item{control_file}{path of the control file}
@@ -39,7 +49,7 @@ A \code{pmxploit} NONMEM run object.
 Starts a NONMEM run
 }
 \examples{
-\\notrun{
+\notrun{
 nm_exec(control_file = "control_file.ctl", nonmem_exe = "/path/to/nmfe")
 }
 }

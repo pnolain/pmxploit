@@ -4,11 +4,18 @@
 \alias{load_nm_run}
 \title{Load a NONMEM run data}
 \usage{
-load_nm_run(path, temp_directory = str_c(tempdir(), "/pmxploit"),
-  load_tables = TRUE, read_initial_values = TRUE,
-  keep_tempfiles = FALSE, extract_everything = FALSE,
-  dataset_separator = NA, dataset_na_string = ".",
-  update_progress = NULL, verbose = FALSE)
+load_nm_run(
+  path,
+  temp_directory = str_c(tempdir(), "/pmxploit"),
+  load_tables = TRUE,
+  read_initial_values = TRUE,
+  keep_tempfiles = FALSE,
+  extract_everything = FALSE,
+  dataset_separator = NA,
+  dataset_na_string = ".",
+  update_progress = NULL,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{path}{character. Run folder or archive file path.}
@@ -43,7 +50,7 @@ Useful to follow loading progression.}
 A NONMEM run object. See \code{\link{load_nm_run_directory}}.
 }
 \description{
-Loads NONMEM run results data from either a folder or a archive file (tar.gz or zip).
+Loads NONMEM run results data from either a folder or a archive file (tar.gz, tgz or zip).
 }
 \examples{
 \dontrun{

@@ -4,8 +4,12 @@
 \alias{parse_nm_control_stream}
 \title{Parse a NONMEM control stream}
 \usage{
-parse_nm_control_stream(filepath = NULL, content = NULL,
-  read_initial_values = TRUE, verbose = FALSE)
+parse_nm_control_stream(
+  filepath = NULL,
+  content = NULL,
+  read_initial_values = TRUE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{filepath}{character. If \code{content = NULL}, defines the filepath of

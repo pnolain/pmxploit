@@ -4,8 +4,13 @@
 \alias{plot_parameters_vs_categorical_covariates}
 \title{Plot parameters vs categorical covariates correlations}
 \usage{
-plot_parameters_vs_categorical_covariates(run, parameters = NULL,
-  covariates = NULL, baseline_only = TRUE, auto_legend = TRUE)
+plot_parameters_vs_categorical_covariates(
+  run,
+  parameters = NULL,
+  covariates = NULL,
+  baseline_only = TRUE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

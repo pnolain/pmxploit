@@ -4,11 +4,22 @@
 \alias{plot_observed_profiles}
 \title{Spaghetti plot}
 \usage{
-plot_observed_profiles(run, compartment = NULL, idv = "TIME",
-  ids = NULL, show_mdv = TRUE, log_dv = FALSE,
-  mean_profiles = FALSE, x_scale = "linear", y_scale = "linear",
-  logticks_annotation = TRUE, facetted = TRUE, facet_scales = "free",
-  transparency = FALSE, auto_legend = TRUE)
+plot_observed_profiles(
+  run,
+  compartment = NULL,
+  idv = "TIME",
+  ids = NULL,
+  show_mdv = TRUE,
+  log_dv = FALSE,
+  mean_profiles = FALSE,
+  x_scale = "linear",
+  y_scale = "linear",
+  logticks_annotation = TRUE,
+  facetted = TRUE,
+  facet_scales = "free",
+  transparency = FALSE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

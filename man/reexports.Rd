@@ -15,7 +15,7 @@ These objects are imported from other packages. Follow the links
 below to see their documentation.
 
 \describe{
-  \item{dplyr}{\code{\link[dplyr]{filter}}, \code{\link[dplyr]{group_by}}, \code{\link[dplyr]{ungroup}}, \code{\link[dplyr]{slice}}}
+  \item{dplyr}{\code{\link[dplyr]{filter}}, \code{\link[dplyr]{group_by}}, \code{\link[dplyr]{slice}}, \code{\link[dplyr]{ungroup}}}
 
   \item{magrittr}{\code{\link[magrittr]{\%>\%}}}
 }}

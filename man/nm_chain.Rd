@@ -4,9 +4,16 @@
 \alias{nm_chain}
 \title{Generates control files and dataset for $CHAIN analysis}
 \usage{
-nm_chain(run, n_sample = 15, iaccept = 0.5, ctype = 2,
-  degrees_of_freedom = NULL, seed = 1000,
-  target_directory = "initial", update_progress = NULL)
+nm_chain(
+  run,
+  n_sample = 15,
+  iaccept = 0.5,
+  ctype = 2,
+  degrees_of_freedom = NULL,
+  seed = 1000,
+  target_directory = "initial",
+  update_progress = NULL
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object of the source run.}
@@ -35,7 +42,7 @@ Generates control files and dataset for $CHAIN analysis
 See NONMEM documentation for details about IACCEPT, CTYPE and DF parameters.
 }
 \examples{
-\\notrun{
+\notrun{
 nm_chain(pmxploit::EXAMPLERUN)
 }
 }

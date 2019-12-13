@@ -4,8 +4,12 @@
 \alias{plot_convergence}
 \title{Convergence plot}
 \usage{
-plot_convergence(run, estimation_number = NULL, parameters = NULL,
-  auto_legend = TRUE)
+plot_convergence(
+  run,
+  estimation_number = NULL,
+  parameters = NULL,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

@@ -4,8 +4,13 @@
 \alias{quality_criteria}
 \title{Quality criteria (QC) computations}
 \usage{
-quality_criteria(run, predictions = "PRED", log_data = FALSE,
-  alpha = 0.05, drop_empty_splits = FALSE)
+quality_criteria(
+  run,
+  predictions = "PRED",
+  log_data = FALSE,
+  alpha = 0.05,
+  drop_empty_splits = FALSE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

@@ -4,8 +4,13 @@
 \alias{nm_simulation}
 \title{Generate a NONMEM control stream for simulations from a run}
 \usage{
-nm_simulation(run, n_simulations = 100, seed = sample.int(1e+09, 1),
-  output_table_format = ",1PE11.4", output_file = NULL)
+nm_simulation(
+  run,
+  n_simulations = 100,
+  seed = sample.int(1e+09, 1),
+  output_table_format = ",1PE11.4",
+  output_file = NULL
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object of the source run.}

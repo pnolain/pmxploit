@@ -4,9 +4,14 @@
 \alias{summarize_parameters_vs_continuous_covariates}
 \title{Parameters vs continuous covariates correlations}
 \usage{
-summarize_parameters_vs_continuous_covariates(run, parameters = NULL,
-  covariates = NULL, baseline_only = TRUE, correlation_method = NULL,
-  auto_order = TRUE)
+summarize_parameters_vs_continuous_covariates(
+  run,
+  parameters = NULL,
+  covariates = NULL,
+  baseline_only = TRUE,
+  correlation_method = NULL,
+  auto_order = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}

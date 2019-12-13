@@ -4,15 +4,27 @@
 \alias{plot_residuals}
 \title{Residuals plot}
 \usage{
-plot_residuals(run, compartment = NULL, idv = "TIME", residuals,
-  absolute_residuals = FALSE, keep_time_zero = FALSE,
-  type = "scatterplot", smoothing_method = NULL, smoothing_se = TRUE,
-  reference_value = NULL, histogram_bins = 30L,
+plot_residuals(
+  run,
+  compartment = NULL,
+  idv = "TIME",
+  residuals,
+  absolute_residuals = FALSE,
+  keep_time_zero = FALSE,
+  type = "scatterplot",
+  smoothing_method = NULL,
+  smoothing_se = TRUE,
+  reference_value = NULL,
+  histogram_bins = 30L,
   histogram_empirical_density = TRUE,
-  histogram_reference_distribution = list(fun = dnorm, args = list(mean =
-  0, sd = 1)), qq_reference_distribution = list(fun = qnorm, args =
-  list(mean = 0, sd = 1)), x_scale = "linear", y_scale = "linear",
-  facet_scales = "free", transparency = FALSE, auto_legend = TRUE)
+  histogram_reference_distribution = list(fun = dnorm, args = list(mean = 0, sd = 1)),
+  qq_reference_distribution = list(fun = qnorm, args = list(mean = 0, sd = 1)),
+  x_scale = "linear",
+  y_scale = "linear",
+  facet_scales = "free",
+  transparency = FALSE,
+  auto_legend = TRUE
+)
 }
 \arguments{
 \item{run}{\code{pmxploit} NONMEM run object.}
