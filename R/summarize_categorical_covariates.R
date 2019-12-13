@@ -65,7 +65,7 @@ summarize_categorical_covariates <- function(run,
 
     g_df <- df %>%
       gather(covariate, value, -ID, -one_of(split_by), factor_key = TRUE) %>%
-      group_by(UQS(grps))
+      group_by(!!!(grps))
   } else {
     g_df <- df %>%
       gather(covariate, value, -ID, convert = TRUE, factor_key = TRUE) %>%
@@ -78,32 +78,6 @@ summarize_categorical_covariates <- function(run,
     ungroup()
 
   if (!is.null(split_by)) {
-    # summed_df <- summed_df %>%
-    #   complete(UQ(sym(split_by)), nesting(covariate, value), fill = list(n = 0, frequency = 0))
-    #
-    #
-    # args <- map(unname(split_by), ~ sym(.))
-    #
-    # do.call(complete, args = c(data = list(summed_df),
-    #                            args,
-    #                            nesting(sym("covariate"), sym("value"))))
-    # summed_df %>%
-    #   complete(UQ(sym(split_by[[1]])),
-    #            UQ(sym(split_by[[2]])),
-    #            nesting(covariate, value), fill = list(n = 0, frequency = 0))
-    #
-    # summed_df %>%
-    #   complete(vars(1,2),
-    #            nesting(covariate, value))
-    #
-    # summed_df %>%
-    #   complete(UQ(sym(split_by[[1]])), nesting(covariate, value)) %>%
-    #   complete(UQ(sym(split_by[[2]])), nesting(UQ(sym(split_by[[1]])), covariate, value))
-    #
-    # summed_df <- summed_df %>%
-    #   complete_(c(unname(unlist(split_by))), ~nesting(covariate))
-
-    # cargs <- c(map(unname(split_by), ~ sym(.)))
     cargs <- syms(unname(split_by))
 
     summed_df <- do.call(complete,
@@ -116,12 +90,6 @@ summarize_categorical_covariates <- function(run,
       after = 1
       )
     )
-
-    # args <- map(split_by, ~ UQ(sym(.)))
-
-    # do.call(summed_df, )
-    # summed_df <- summed_df %>%
-    #   complete(nesting(UQ(syms(split_by))), nesting(covariate, value), fill = list(n = 0, frequency = 0))
   }
 
   for (cn in split_by) {

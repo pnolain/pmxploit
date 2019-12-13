@@ -2,6 +2,9 @@
 #'
 #' @param control_stream \code{nonmem_control_stream} object. Control stream data, obtained from a prior
 #'   call to \code{parse_nm_control_stream()} function.
+#'
+#' @inheritParams load_nm_run
+#'
 load_nm_run_directory <-
   function(path,
              dataset_separator = NA,
@@ -903,7 +906,7 @@ load_nm_run_directory <-
         parse_quo(formula_text, env = caller_env())
       })
 
-      dataset <- dataset %>% filter(UQS(ignore_quos))
+      dataset <- dataset %>% filter(!!!(ignore_quos))
     }
 
     # add EVID column if missing
@@ -1447,7 +1450,6 @@ load_nm_run_directory <-
 #'   Useful to follow loading progression.
 #' @param verbose logical. If \code{TRUE}: prints output messages.
 #'
-#' @inheritParams load_nm_run_directory
 #'
 #' @return A NONMEM run object. See \code{\link{load_nm_run_directory}}.
 #' @export

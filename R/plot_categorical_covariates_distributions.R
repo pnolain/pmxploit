@@ -58,7 +58,7 @@ plot_categorical_covariates_distributions <- function(run,
 
   if (order) {
     tab <- tab %>%
-      group_by(UQS(syms(c("covariate", cols)))) %>%
+      group_by(!!!(syms(c("covariate", cols)))) %>%
       arrange(n) %>%
       ungroup() %>%
       mutate(order = as.factor(row_number()))
