@@ -254,7 +254,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
       data_text <- data_text %>% str_remove(ignore_txt_pattern) %>% str_trim() %>%
         str_remove_all("\\s") %>%
-        str_replace("\\)", ") ")
+        str_replace_all("\\)", ") ")
     }
 
 
