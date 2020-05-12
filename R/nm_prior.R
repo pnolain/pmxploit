@@ -238,14 +238,14 @@ nm_prior <- function(run,
   df <- df %>%
     add_row(name = map_chr(new_records, "name"),
             lines = map(new_records, "lines"), .after = prior_writing_id) %>%
-    add_row(lines = sprintf("; Control stream generated for PRIOR analysis from:\n; %s\n", run$info$path), .before = 1) %>%
-    add_row(name = "PRIOR", lines = "$PRIOR NWPRI\n", .after = max(which(df$name %in% c("INPUT", "DATA", "MODEL"))))
+    add_row(lines = list(sprintf("; Control stream generated for PRIOR analysis from:\n; %s\n", run$info$path)), .before = 1) %>%
+    add_row(name = "PRIOR", lines = list("$PRIOR NWPRI\n"), .after = max(which(df$name %in% c("INPUT", "DATA", "MODEL"))))
 
   # df <- df %>%
   #   mutate(lines = map2(name, lines, ~ if(..1 == "INPUT") { "$INPUT ;; Edit $INPUT to match the new dataset columns" } else { ..2 }))
   input_writing_id <- max(which(df$name == "INPUT"))
 
-  df[input_writing_id,]$lines <- "$INPUT ;; Edit $INPUT to match the new dataset columns"
+  df[input_writing_id,]$lines <- list("$INPUT ;; Edit $INPUT to match the new dataset columns")
 
   if(!is.null(estimations)){
     est_writing_id <- max(which(df$name == "ESTIMATION"))
@@ -260,7 +260,7 @@ nm_prior <- function(run,
     })
 
     df <- df %>%
-      add_row(.before = est_writing_id, name = "ESTIMATION", lines = est_rows)
+      add_row(.before = est_writing_id, name = "ESTIMATION", lines = list(est_rows))
   }
 
   prior_text <- str_c(str_replace_na(map_chr(df$lines, ~ str_c(., collapse = "\n")), ""), collapse = "\n")

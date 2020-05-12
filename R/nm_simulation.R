@@ -173,18 +173,18 @@ nm_simulation <- function(run,
                                      cs$code[start:end]
                                    })
                           })) %>%
-    add_row(lines = sprintf("; Control stream generated for simulations (N = %s) from:\n; %s\n", n_simulations, source_path), .before = 1) %>%
-    add_row(lines = sprintf("$SIMULATION (%s) ONLYSIMULATION NSUBPROBLEMS=%s", seed, n_simulations)) %>%
-    add_row(lines = sprintf("$TABLE ID %s NOHEADER NOPRINT NOAPPEND FORMAT=%s FILE=simtab",
+    add_row(lines = list(sprintf("; Control stream generated for simulations (N = %s) from:\n; %s\n", n_simulations, source_path)), .before = 1) %>%
+    add_row(lines = list(sprintf("$SIMULATION (%s) ONLYSIMULATION NSUBPROBLEMS=%s", seed, n_simulations))) %>%
+    add_row(lines = list(sprintf("$TABLE ID %s NOHEADER NOPRINT NOAPPEND FORMAT=%s FILE=simtab",
                             str_c(sim_tab_columns, collapse = " "),
-                            ",1PE11.4"))
+                            ",1PE11.4")))
 
   first_record_id <- min(which(df$name %in% c("THETA", "OMEGA", "SIGMA")))
   last_record_id <- max(which(df$name %in% c("THETA", "OMEGA", "SIGMA")))
 
   df <- df %>%
-    add_row(name = "COMMENT", lines = c(pad_line(n_pad = 50, pad = "="), "; POPULATION PARAMETERS", pad_line(n_pad = 50, pad = "=")), .before = first_record_id) %>%
-    add_row(name = "COMMENT", lines = c(pad_line(n_pad = 50, pad = "=")), .after = last_record_id + 3)
+    add_row(name = "COMMENT", lines = list(c(pad_line(n_pad = 50, pad = "="), "; POPULATION PARAMETERS", pad_line(n_pad = 50, pad = "="))), .before = first_record_id) %>%
+    add_row(name = "COMMENT", lines = list(c(pad_line(n_pad = 50, pad = "="))), .after = last_record_id + 3)
 
   sim_text <-  str_c(map_chr(df$lines, ~ str_c(., collapse = "\n")), collapse = "\n")
 
