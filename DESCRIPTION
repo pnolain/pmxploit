@@ -1,8 +1,8 @@
 Package: pmxploit
 Type: Package
 Title: Pharmacometric tools for post-processing analysis
-Version: 3.0.5
-Date: 2019-12-19
+Version: 3.0.6
+Date: 2020-05-12
 Authors@R: c(person("Patrick", "Nolain", email = "patrick.nolain@sanofi.com", role = c("aut", "cre")))
 Description: Helper package for exploitation of NONMEM runs.
   Facilitates post-processing analysis: exploration and visualization, model diagnostics,
@@ -34,7 +34,7 @@ Suggests:
     testthat,
     knitr,
     spelling
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 VignetteBuilder: knitr
 Language: en-US
 Encoding: UTF-8

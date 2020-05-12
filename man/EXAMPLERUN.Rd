@@ -4,7 +4,9 @@
 \name{EXAMPLERUN}
 \alias{EXAMPLERUN}
 \title{NONMEM example run}
-\format{A NONMEM run object of the class \code{nonmem_run}.}
+\format{
+A NONMEM run object of the class \code{nonmem_run}.
+}
 \usage{
 EXAMPLERUN
 }

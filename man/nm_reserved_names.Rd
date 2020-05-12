@@ -4,7 +4,9 @@
 \name{nm_reserved_names}
 \alias{nm_reserved_names}
 \title{NONMEM reserved names}
-\format{A vector of NONMEM reserved names.}
+\format{
+A vector of NONMEM reserved names.
+}
 \usage{
 nm_reserved_names
 }

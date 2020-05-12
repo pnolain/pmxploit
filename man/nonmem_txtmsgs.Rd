@@ -4,7 +4,9 @@
 \name{nonmem_txtmsgs}
 \alias{nonmem_txtmsgs}
 \title{NONMEM text messages}
-\format{A data frame with two variables: \code{id}, \code{message}.}
+\format{
+A data frame with two variables: \code{id}, \code{message}.
+}
 \usage{
 nonmem_txtmsgs
 }
