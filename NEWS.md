@@ -1,3 +1,8 @@
+# pmxploit 3.0.7
+
+* Functions `nm_bootstrap`, `nm_chain` and `nm_jacknife` were removed
+* Compatibility changes for `tibble` package version 3.0.0
+
 # pmxploit 2.1
 
 * Control stream parsing enhanced:
