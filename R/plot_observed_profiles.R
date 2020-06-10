@@ -56,7 +56,7 @@ plot_observed_profiles <- function(run, compartment = NULL, idv = "TIME", ids = 
   }
 
   split_by <- NULL
-  if (!is.null(groups(df))) {
+  if (!is.null(groups(df)) && length(groups(df)) > 0) {
     split_by <- as.character(groups(df))
     df <- ungroup(df)
   }

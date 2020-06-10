@@ -40,7 +40,7 @@ summarize_covariates_correlations <-
     }
 
     split_by <- NULL
-    if (!is.null(groups(df))) {
+    if (!is.null(groups(df)) && length(groups(df)) > 0) {
       split_by <- as.character(groups(df))
       df <- ungroup(df)
     }

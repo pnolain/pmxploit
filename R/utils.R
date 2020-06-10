@@ -326,7 +326,7 @@ get_reduced_dataset <- function(source_df, baseline_only) {
   df <- source_df
 
   original_groups <- NULL
-  if (!is.null(groups(df))) {
+  if (!is.null(groups(df)) && length(groups(df)) > 0) {
     original_groups <- as.character(groups(df))
     df <- ungroup(df)
   }
