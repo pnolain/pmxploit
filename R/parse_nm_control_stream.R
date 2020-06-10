@@ -323,6 +323,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     if (length(unlist(ignore_matches2)) > 0) {
       ignore_df2 <- ignore_matches2 %>%
         .[[1]] %>%
+        as.data.frame() %>%
         as_tibble() %>%
         rename(column = V2, operator = V3, value = V4) %>%
         mutate(
@@ -529,6 +530,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
     if (length(eps_lines) > 0) {
       eps_matches <- str_match(pk_lines[eps_lines], eps_pattern) %>%
+        as.data.frame() %>%
         as_tibble() %>%
         mutate(V4 = str_trim(V4)) %>%
         mutate(type = "epsilon", id = str_c(V3, V4), n = as.integer(V4)) %>%
@@ -568,6 +570,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
     if (length(mu_lines) > 0) {
       mu_matches <- str_match(pk_lines[mu_lines], mu_pattern) %>%
+        as.data.frame() %>%
         as_tibble() %>%
         mutate(type = "mu", id = str_c("MU_", V3), n = as.integer(V3)) %>%
         rename(rhs = V4) %>%
@@ -598,6 +601,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
       if (length(abbr_replace_lines) > 0) {
         abbr_replace_matches <- str_match(abbr_lines[abbr_replace_lines], abbr_replace_pattern) %>%
+          as.data.frame() %>%
           as_tibble() %>%
           mutate(type = ifelse(V2 == "THETA", "theta", ifelse(V2 == "ETA", "eta", "epsilon")),
                  n = map2(V3, V5, function(lhs, rhs){
