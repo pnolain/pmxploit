@@ -213,6 +213,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     column_pattern <- "^([\\w]+)=?([\\w]*)$"
     input_matches <- str_match(splitted_input, column_pattern) %>%
       na.omit() %>%
+      as.data.frame() %>% # temp col names
       as_tibble() %>%
       rename(match = V1, left = V2, right = V3) %>%
       mutate(
@@ -455,6 +456,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
     if (length(theta_lines) > 0) {
       theta_matches <- str_match(pk_lines[theta_lines], theta_pattern) %>%
+        as.data.frame() %>% # temp col names
         as_tibble() %>%
         mutate(V3 = str_trim(V3)) %>%
         mutate(type = "theta", id = str_c("THETA", V3), n = as.integer(V3)) %>%
@@ -469,7 +471,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     theta_lines_2 <- str_which(pk_lines, theta_pattern_2)
     if (length(theta_lines_2) > 0) {
       theta_matches_2 <- str_match_all(pk_lines[theta_lines_2], theta_pattern_2) %>%
-        map_df(as_tibble) %>%
+        map_df(as.data.frame) %>%
         rename(n = V2) %>%
         select(n) %>%
         mutate(n = as.integer(as.character(n)), type = "theta", id = str_c("THETA", n), name = id) %>%
@@ -490,6 +492,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
 
     if (length(eta_lines) > 0) {
       eta_matches <- str_match(pk_lines[eta_lines], eta_pattern) %>%
+        as.data.frame() %>% # temp col names
         as_tibble() %>%
         mutate(V3 = str_trim(V3)) %>%
         mutate(type = "eta", id = str_c("ETA", V3), n = as.integer(V3)) %>%
@@ -504,7 +507,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     eta_lines_2 <- str_which(pk_lines, eta_pattern_2)
     if (length(eta_lines_2) > 0) {
       eta_matches_2 <- str_match_all(pk_lines[eta_lines_2], eta_pattern_2) %>%
-        map_df(as_tibble) %>%
+        map_df(as.data.frame) %>%
         rename(n = V2) %>%
         select(n) %>%
         mutate(n = as.integer(as.character(n)), type = "eta", id = str_c("ETA", n), name = id) %>%
@@ -540,7 +543,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
     eps_lines_2 <- str_which(pk_lines, eps_pattern_2)
     if (length(eps_lines_2) > 0) {
       eps_matches_2 <- str_match_all(pk_lines[eps_lines_2], eps_pattern_2) %>%
-        map_df(as_tibble) %>%
+        map_df(as.data.frame) %>%
         mutate(n = as.integer(as.character(V3)), type = "epsilon", id = str_c(V2, V3), name = id) %>%
         select(n, id, type, name) %>%
         as_tibble() %>%
@@ -977,6 +980,7 @@ parse_nm_control_stream <- function(filepath = NULL, content = NULL, read_initia
               etas_list_match <- str_match_all(toupper(tab_def), etas_list_pattern)[[1]]
 
               etas_list_df <- etas_list_match %>%
+                as.data.frame() %>% # temp col names
                 as_tibble() %>%
                 mutate(
                   start = as.integer(V2),
