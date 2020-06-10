@@ -23,7 +23,7 @@ convert_nm_table <- function(table) {
     table$EVID <- factor(table$EVID, levels = c(0, 1, 2, 3, 4), ordered = FALSE)
   }
 
-  table %>% tbl_df()
+  table %>% as_tibble()
 }
 
 infinite_as_na <- function(values) {
