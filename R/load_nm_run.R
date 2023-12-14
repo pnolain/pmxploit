@@ -313,7 +313,7 @@ load_nm_run_directory <-
 
           etas_names <-
             xmlSApply(
-              eta_bar_node %>% xmlChildren() %>% first(),
+              eta_bar_node %>% xmlChildren() %>% .[[1]],
               function(x)
                 xmlGetAttr(x, name = "cname")
             ) %>%
@@ -506,7 +506,7 @@ load_nm_run_directory <-
           cov_m_names <- map(
             covariance_node %>%
               xmlChildren() %>%
-              last() %>%
+              .[[length(.)]] %>%
               xmlChildren(),
             function(x)
               xmlGetAttr(x, "cname")
@@ -528,7 +528,7 @@ load_nm_run_directory <-
           cov_m_names <- map(
             correlation_node %>%
               xmlChildren() %>%
-              last() %>%
+              .[[length(.)]] %>%
               xmlChildren(),
             function(x)
               xmlGetAttr(x, "cname")
@@ -1098,6 +1098,16 @@ load_nm_run_directory <-
       select(CMT) %>%
       unique() %>%
       unlist(use.names = FALSE)
+
+    # no CMT found for DV, but CMT=0 exists
+    if(length(dv_cmts) == 0 & any(dataset$CMT == 0)){
+      ds_cmts <- unique(dataset$CMT)
+
+      dv_cmts <- compartments$cmt[!compartments$cmt %in% ds_cmts]
+
+      compartments$cmt[compartments$cmt == dv_cmts] <- 0
+      dv_cmts <- 0
+    }
 
     compartments$dv_target <- compartments$cmt %in% dv_cmts
 
